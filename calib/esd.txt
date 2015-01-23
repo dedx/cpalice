@@ -1,0 +1,10 @@
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0001/AliESDs.root
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0002/AliESDs.root
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0003/AliESDs.root
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0004/AliESDs.root
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0005/AliESDs.root
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0006/AliESDs.root
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0007/AliESDs.root
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0008/AliESDs.root
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0009/AliESDs.root
+/scratch2/alice/data/2011/LHC11c/000152367/ESDs/spc_calo/0010/AliESDs.root
