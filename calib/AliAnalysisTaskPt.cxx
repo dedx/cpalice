@@ -17,7 +17,7 @@
 
 // example of an analysis task creating a p_t spectrum
 // Authors: Panos Cristakoglou, Jan Fiete Grosse-Oetringhaus, Christian Klein-Boesing
-// Reviewed: A.Gheata (19/02/10)
+// Rfffeviewed: A.Gheata (19/02/10)
 
 ClassImp(AliAnalysisTaskPt)
 
