@@ -24,14 +24,21 @@ class AliAnalysisTaskPt : public AliAnalysisTaskSE {
   AliVEvent *fESD;    //! ESD object
   TList       *fOutputList; //! Output list
   TH1F        *fHistPt; //! Track Pt spectrum
+  TH1F        *fHistTOF; //Track TOF Spectrum
+  TH1F        *fHistNumTOFTOT;
+  TH1F        *fHistNumTOFTDC;
+  TH1F        *fHistDeltaR;
+  TH2F        *fHistDeltaT;
+  TH2F        *fHistEADC;
+  TH2F        *fHistDeltaE;
+  TH2F        *fHistDeltaADC;
   TH2F        *fHistEtaPhiCC[100];
   TH2F        *fHistEtaPhiTC[100]; // my plot
-  TH1F        *fHistTOFCC[100]; // time of CaloClusters
-  TH1F        *fHistTOFTC[100]; // time of flight of TOF clusters
   TH1F        *fHistNumCC;
   TH1F        *fHistNumTC;
   Int_t       fEvtNum; // keep track of event number
   Int_t       fHistNum; // store every Nth event's info in histogram
+  
 
   AliAnalysisTaskPt(const AliAnalysisTaskPt&); // not implemented
   AliAnalysisTaskPt& operator=(const AliAnalysisTaskPt&); // not implemented
