@@ -15,17 +15,18 @@ void run1()
   gSystem->Load("libANALYSIS");
 
   // if running in aliroot, load only this library
-  gSystem->Load("libANALYSISalice");
+    gSystem->Load("libANALYSISalice");
 
-  gROOT->LoadMacro("$ALICE_ROOT/PWGUD/macros/CreateESDChain.C");
+  gROOT->LoadMacro("macros/CreateESDChain.C");
 //  gROOT->LoadMacro("$ALICE_ROOT/PWG0/CreateESDChain.C");
-  TChain* chain = CreateChain("esdTree","run_177477BF.txt", 99);
+  TChain* chain = CreateChain("esdTree","test.txt", 99);
 
   // for includes use either global setting in $HOME/.rootrc
   // ACLiC.IncludePaths: -I$(ALICE_ROOT)/include
   // or in each macro
+  gSystem->AddIncludePath("-Wno-deprecated");
   gSystem->AddIncludePath("-I$ALICE_ROOT/include");
-  gSystem->AddIncludePath("-I$ALICE_ROOT/TOF");
+  gSystem->AddIncludePath("-I$ALICE_PHYSICS/include");
 
   // Create the analysis manager
   AliAnalysisManager *mgr = new AliAnalysisManager("testAnalysis");
@@ -38,11 +39,12 @@ void run1()
 
   // Create task
 
-  gROOT->LoadMacro("AliAnalysisTaskPt.cxx+g");
+  gROOT->LoadMacro("AliAnalysisTaskPt.cxx++g");
   AliAnalysisTask *taskpt = new AliAnalysisTaskPt("TaskPt");
 
   // Add task(s)
   mgr->AddTask(taskpt);
+
 
   // Create containers for input/output
   AliAnalysisDataContainer *cinput = mgr->GetCommonInputContainer();

@@ -24,7 +24,9 @@ ClassImp(AliAnalysisTaskPt)
 
 //________________________________________________________________________
 AliAnalysisTaskPt::AliAnalysisTaskPt(const char *name) 
-: AliAnalysisTaskSE(name), fOutputList(0), fHistPt(0), fHistNumCC(0),fHistNumTC(0),fEvtNum(0),fHistNum(0)
+: AliAnalysisTaskSE(name), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
+  fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
+  fEvtNum(0),fHistNum(0)
 {
   // Constructor
   for (int i = 0; i < 100; i++) {
@@ -43,7 +45,9 @@ AliAnalysisTaskPt::AliAnalysisTaskPt(const char *name)
 
 //________________________________________________________________________
 AliAnalysisTaskPt::AliAnalysisTaskPt() 
-  : AliAnalysisTaskSE(), fESD(0), fOutputList(0), fHistPt(0), fHistNumCC(0),fHistNumTC(0),fEvtNum(0),fHistNum(0)
+  : AliAnalysisTaskSE(), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
+    fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
+    fEvtNum(0),fHistNum(0)
 {
   // Default Constructor
   for (int i = 0; i < 100; i++) {
