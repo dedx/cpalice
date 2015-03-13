@@ -14,17 +14,17 @@
 #include "AliCluster.h"
 #include "AliTOFGeometry.h"
 
-#include "AliAnalysisTaskPt.h"
+#include "AliAnalysisTaskPJ.h"
 
 // example of an analysis task creating a p_t spectrum
 // Authors: Panos Cristakoglou, Jan Fiete Grosse-Oetringhaus, Christian Klein-Boesing
 // Reviewed: A.Gheata (19/02/10)
 
-ClassImp(AliAnalysisTaskPt)
+ClassImp(AliAnalysisTaskPJ)
 
 //________________________________________________________________________
-AliAnalysisTaskPt::AliAnalysisTaskPt(const char *name) 
-: AliAnalysisTaskSE(name), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
+AliAnalysisTaskPJ::AliAnalysisTaskPJ(const char *name) 
+: AliAnalysisTaskSE(name), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
   fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
   fEvtNum(0),fHistNum(0)
 {
@@ -44,7 +44,7 @@ AliAnalysisTaskPt::AliAnalysisTaskPt(const char *name)
 
 
 //________________________________________________________________________
-AliAnalysisTaskPt::AliAnalysisTaskPt() 
+AliAnalysisTaskPJ::AliAnalysisTaskPJ() 
   : AliAnalysisTaskSE(), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
     fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
     fEvtNum(0),fHistNum(0)
@@ -58,7 +58,7 @@ AliAnalysisTaskPt::AliAnalysisTaskPt()
 }
 
 //________________________________________________________________________
-void AliAnalysisTaskPt::UserCreateOutputObjects()
+void AliAnalysisTaskPJ::UserCreateOutputObjects()
 {
   // Create histograms
   // Called once
@@ -135,7 +135,7 @@ void AliAnalysisTaskPt::UserCreateOutputObjects()
 }
 
 //________________________________________________________________________
-void AliAnalysisTaskPt::UserExec(Option_t *) 
+void AliAnalysisTaskPJ::UserExec(Option_t *) 
 {
   // Main loop
   // Called for each event
@@ -314,18 +314,18 @@ void AliAnalysisTaskPt::UserExec(Option_t *)
 }
 
 //________________________________________________________________________
-void AliAnalysisTaskPt::Terminate(Option_t *) 
+void AliAnalysisTaskPJ::Terminate(Option_t *) 
 {
   // Draw result to the screen
   // Called once at the end of the query
   
-  fOutputList = dynamic_cast<TList*> (GetOutputData(1));
+  fOutputList = dynamic_cast<TList*> (GetOutputData(0));
   if (!fOutputList) {printf("ERROR: Output list not available\n");return;}
   
   fHistPt = dynamic_cast<TH1F*> (fOutputList->At(0));
   if (!fHistPt) {printf("ERROR: fHistPt not available\n");return;}
  
-  //TCanvas *c1 = new TCanvas("AliAnalysisTaskPt","Pt",10,10,510,510);
+  //TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
   //c1->cd(1)->SetLogy();fHistPt->DrawCopy("E");
   
   //TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);

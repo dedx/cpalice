@@ -1,7 +1,7 @@
 void run1()
 {
   // If running at root prompt, manually load these libraries
-
+  /*
   gSystem->Load("libTree.so");
   gSystem->Load("libGeom.so");
   gSystem->Load("libVMC.so");
@@ -13,9 +13,9 @@ void run1()
   gSystem->Load("libTOFrec.so");
   // load analysis framework
   gSystem->Load("libANALYSIS");
-
+  */
   // if running in aliroot, load only this library
-    gSystem->Load("libANALYSISalice");
+  //  gSystem->Load("libANALYSISalice");
 
   gROOT->LoadMacro("macros/CreateESDChain.C");
 //  gROOT->LoadMacro("$ALICE_ROOT/PWG0/CreateESDChain.C");
@@ -39,25 +39,25 @@ void run1()
 
   // Create task
 
-  gROOT->LoadMacro("AliAnalysisTaskPt.cxx++g");
-  AliAnalysisTask *taskpt = new AliAnalysisTaskPt("TaskPt");
+  gROOT->LoadMacro("AliAnalysisTaskPJ.cxx++g");
+  AliAnalysisTask *taskpj = new AliAnalysisTaskPJ("OurTask");
 
   // Add task(s)
-  mgr->AddTask(taskpt);
+  mgr->AddTask(taskpj);
 
 
   // Create containers for input/output
   AliAnalysisDataContainer *cinput = mgr->GetCommonInputContainer();
-  AliAnalysisDataContainer *coutputpt = mgr->CreateContainer("chistpt", TList::Class(),   
-      AliAnalysisManager::kOutputContainer, "Pt.ESD.1.root");
+  AliAnalysisDataContainer *coutputpj = mgr->CreateContainer("chistPJ", TList::Class(),   
+      AliAnalysisManager::kOutputContainer, "PJ.Calib.root");
 
   // Connect input/output
-  mgr->ConnectInput(taskpt, 0, cinput);
+  mgr->ConnectInput(taskpj, 0, cinput);
 
   // No need to connect to a common AOD output container if the task does not
   // fill AOD info.
-  //  mgr->ConnectOutput(task, 0, coutput0);
-  mgr->ConnectOutput(taskpt, 1, coutputpt);
+  //mgr->ConnectOutput(task, 0, coutput0);
+  mgr->ConnectOutput(taskpj, 1, coutputpj);
 
 
   // Enable debug printouts
@@ -65,6 +65,6 @@ void run1()
 
   if (!mgr->InitAnalysis()) return;
   mgr->PrintStatus();
-  mgr->StartAnalysis("local", chain, 100000);
+  mgr->StartAnalysis("local", chain, 1000);
 
 }

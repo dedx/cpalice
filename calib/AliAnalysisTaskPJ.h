@@ -1,5 +1,5 @@
-#ifndef AliAnalysisTaskPt_cxx
-#define AliAnalysisTaskPt_cxx
+#ifndef AliAnalysisTaskPJ_cxx
+#define AliAnalysisTaskPJ_cxx
 
 // example of an analysis task creating a p_t spectrum
 // Authors: Panos Cristakoglou, Jan Fiete Grosse-Oetringhaus, Christian Klein-Boesing
@@ -10,11 +10,11 @@ class AliESDEvent;
 
 #include "AliAnalysisTaskSE.h"
 
-class AliAnalysisTaskPt : public AliAnalysisTaskSE {
+class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
  public:
-  AliAnalysisTaskPt(); //default constructor
-  AliAnalysisTaskPt(const char *name);
-  virtual ~AliAnalysisTaskPt() {}
+  AliAnalysisTaskPJ(); //default constructor
+  AliAnalysisTaskPJ(const char *name);
+  virtual ~AliAnalysisTaskPJ() {}
   
   virtual void   UserCreateOutputObjects();
   virtual void   UserExec(Option_t *option);
@@ -40,10 +40,10 @@ class AliAnalysisTaskPt : public AliAnalysisTaskSE {
   Int_t       fHistNum; // store every Nth event's info in histogram
   
 
-  AliAnalysisTaskPt(const AliAnalysisTaskPt&); // not implemented
-  AliAnalysisTaskPt& operator=(const AliAnalysisTaskPt&); // not implemented
+  AliAnalysisTaskPJ(const AliAnalysisTaskPJ&); // not implemented
+  AliAnalysisTaskPJ& operator=(const AliAnalysisTaskPJ&); // not implemented
   
-  ClassDef(AliAnalysisTaskPt, 1); // example of analysis
+  ClassDef(AliAnalysisTaskPJ, 1); // example of analysis
 };
 
 #endif
