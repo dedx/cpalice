@@ -319,7 +319,7 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   // Draw result to the screen
   // Called once at the end of the query
   
-  fOutputList = dynamic_cast<TList*> (GetOutputData(0));
+  fOutputList = dynamic_cast<TList*> (GetOutputData(1));
   if (!fOutputList) {printf("ERROR: Output list not available\n");return;}
   
   fHistPt = dynamic_cast<TH1F*> (fOutputList->At(0));

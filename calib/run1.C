@@ -19,7 +19,7 @@ void run1()
 
   gROOT->LoadMacro("macros/CreateESDChain.C");
 //  gROOT->LoadMacro("$ALICE_ROOT/PWG0/CreateESDChain.C");
-  TChain* chain = CreateChain("esdTree","test.txt", 99);
+  TChain* chain = CreateChain("esdTree","run_149881NoB.txt", 99);
 
   // for includes use either global setting in $HOME/.rootrc
   // ACLiC.IncludePaths: -I$(ALICE_ROOT)/include
