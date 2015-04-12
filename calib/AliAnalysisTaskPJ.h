@@ -38,7 +38,6 @@ class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
   TH1F        *fHistNumTC;
   Int_t       fEvtNum; // keep track of event number
   Int_t       fHistNum; // store every Nth event's info in histogram
-  
 
   AliAnalysisTaskPJ(const AliAnalysisTaskPJ&); // not implemented
   AliAnalysisTaskPJ& operator=(const AliAnalysisTaskPJ&); // not implemented

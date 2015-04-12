@@ -209,6 +209,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
     //AliVParticle* track = fInputEvent->GetTrack(iTracks);
     AliESDtrack* track = (AliESDtrack*)fInputEvent->GetTrack(iTracks);
     if (!track) { printf("ERROR: Could not receive track %d\n", iTracks);continue;}
+    printf("Track %d has been matched to EMCAL %d", track->GetID(), track->GetEMCALcluster());
     //AliTOFcluster* tof = (AliTOFcluster*);
     //tof.fIdx = track->GetTOFcluster();
     //EmCal = new AliESDCaloCluster();
@@ -236,6 +237,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
   Int_t nclus = caloClusters->GetEntries();   
   //Int_t nCells = clus->GetNCells();
   fHistNumCC->Fill(nclus);
+  Bool_t matchedTOF[tofClusters->GetEntriesFast()];
   for (Int_t icl = 0; icl < nclus; icl++) {    
     AliVCluster* clus = (AliVCluster*)caloClusters->At(icl);
     Int_t nCells = clus->GetNCells();
@@ -289,18 +291,27 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 	//cout<<"TOFeta: "<<TOFeta<<endl;
 	//cout<<"cphi: "<<cphi<<endl;
 	//cout<<"TOFphi: "<<TOFphi<<endl;
-	if (TOFphi < 3.15 && TOFphi > 1.35 && TOFeta < .7 && TOFeta > -.7)
+	if (TOFphi < 3.5 && TOFphi > 1.0 && TOFeta < .9 && TOFeta > -.9)
 	  {
-	    Double_t R1 = ceta - TOFeta;
+	    Double_t R1 = TOFeta;
 	//cout<<"R1: "<<R1<<endl;
-	    Double_t R2 = cphi-TOFphi;
+	    Double_t R2 = TOFphi;
 	//cout<<"R2: "<<R2<<endl;
-	    Double_t DeltaR = sqrt(pow(R1, 2) + pow(R2,2));
+	    Double_t Rtof = sqrt(pow(R1, 2) + pow(R2,2));
 	    //cout<<"DeltaR: "<<DeltaR<<endl;
-	    fHistDeltaR->Fill(DeltaR);
-	    fHistDeltaT->Fill(DeltaR, EmCaltof-time);
-	    if (DeltaR < .05 && DeltaR > .01){fHistDeltaE->Fill(DeltaR, EmCalEnergy);fHistDeltaADC->Fill(DeltaR, TOFADC);
-	      if (TOFADC!=0){fHistEADC->Fill(iToFTrack, EmCalEnergy/TOFADC);}}
+        Double_t Remcal = sqrt(pow(ceta, 2) + pow(cphi, 2));
+        //These two if statements are for deciding which data you want to see.
+	//Putting the fill in the first one will show all matched cluster and the second, all unmatched clusters
+	if (abs(Remcal-Rtof)<.1 && matchedTOF[iToFTrack] == false)
+        {
+	  fHistDeltaR->Fill(Remcal-Rtof);  
+	  matchedTOF[iToFTrack] = true;
+        }
+        if (abs(Remcal-Rtof)<.1 && matchedTOF[iToFTrack] == false)
+	{
+	  //fHistDeltaR->Fill(Remcal-Rtof);
+	}
+
 	  }
 	  }}
   //clean up to avoid mem leaks
@@ -319,14 +330,14 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   // Draw result to the screen
   // Called once at the end of the query
   
-  fOutputList = dynamic_cast<TList*> (GetOutputData(0));
+  fOutputList = dynamic_cast<TList*> (GetOutputData(1));
   if (!fOutputList) {printf("ERROR: Output list not available\n");return;}
   
   fHistPt = dynamic_cast<TH1F*> (fOutputList->At(0));
   if (!fHistPt) {printf("ERROR: fHistPt not available\n");return;}
  
-  //TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
-  //c1->cd(1)->SetLogy();fHistPt->DrawCopy("E");
+  TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
+  c1->cd(1)->SetLogy();fHistPt->DrawCopy("E");
   
   //TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);
   //c2->cd(); fHistTOF->Draw();
@@ -340,14 +351,15 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   TCanvas *c5 = new TCanvas("histoDeltaR", "Tof DeltaR", 10,10,510,510);
   c5->cd(); fHistDeltaR->Draw();
 
-  TCanvas *c9 = new TCanvas("histoDeltaT", "DeltaR-DeltaT", 10,10,510,510);
-  c9->cd(); fHistDeltaT->Draw();
+  // TCanvas *c9 = new TCanvas("histoDeltaT", "DeltaR-DeltaT", 10,10,510,510);
+  //c9->cd(); fHistDeltaT->Draw();
 
-  TCanvas *c6 = new TCanvas("histoDeltaE", "TOF-EMACAL Energy", 10,10,510,510);
-  c6->cd();fHistDeltaE->Draw();
+  // TCanvas *c6 = new TCanvas("histoDeltaE", "TOF-EMACAL Energy", 10,10,510,510);
+  // c6->cd();fHistDeltaE->Draw();
 
-  TCanvas *c7 = new TCanvas("histoDeltaADC", "TOF ADC-Delta R", 10, 10, 510, 510);
-  c7->cd();fHistDeltaADC->Draw();
+  //  TCanvas *c7 = new TCanvas("histoDeltaADC", "TOF ADC-Delta R", 10, 10, 510, 510);
+  //c7->cd();fHistDeltaADC->Draw();
 
-  TCanvas *c8 = new TCanvas("histoEADC", "E/ADC", 10,10,510,510);
-  c8->cd();fHistEADC->Draw();}
+  //  TCanvas *c8 = new TCanvas("histoEADC", "E/ADC", 10,10,510,510);
+  //c8->cd();fHistEADC->Draw();
+}
