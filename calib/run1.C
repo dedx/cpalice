@@ -19,7 +19,7 @@ AliAnalysisTask* run1()
 
   //  gROOT->LoadMacro("$ROOTSYS/macros/CreateESDChain.C");
 //  gROOT->LoadMacro("$ALICE_ROOT/PWG0/CreateESDChain.C");
-//  TChain* chain = CreateChain("esdTree","run_149881NoB.txt", 1);
+//  TChain* chain = CreateChain("esdTree","run_149881NoB.txt",
 
   // for includes use either global setting in $HOME/.rootrc
   // ACLiC.IncludePaths: -I$(ALICE_ROOT)/include
