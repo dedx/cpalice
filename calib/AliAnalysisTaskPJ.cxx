@@ -71,11 +71,11 @@ void AliAnalysisTaskPJ::UserCreateOutputObjects()
   fHistPt->GetYaxis()->SetTitle("dN/dP_{T} (c/GeV)");
   fHistPt->SetMarkerStyle(kFullCircle);  
 
-  fHistTOF = new TH1F("fHistTOF", "TOF distribution", 100, 0, 1E-6);
+  fHistTOF = new TH1F("fHistTOF", "Unmatched TOF R", 100, .8, 3.8);
   fHistTOF->GetXaxis()->SetTitle("TOF (Sec)");
   fHistTOF->GetYaxis()->SetTitle("Counts");
 
-  fHistDeltaR = new TH1F("fHistDeltaR", "2D DeltaE-DeltaR distribution", 10000, 0, 5);
+  fHistDeltaR = new TH1F("fHistDeltaR", "2D DeltaE-DeltaR distribution", 100, 0, .15);
   fHistDeltaR->GetXaxis()->SetTitle("Delta R ()");
   fHistDeltaR->GetYaxis()->SetTitle("cts");
 
@@ -203,7 +203,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
   
   
   printf("<INFO>Ntracks=%d\n",fInputEvent->GetNumberOfTracks());
-  
+
   // Track loop to fill a pT spectrum
   for (Int_t iTracks = 0; iTracks < fInputEvent->GetNumberOfTracks(); iTracks++) {
     //AliVParticle* track = fInputEvent->GetTrack(iTracks);
@@ -257,7 +257,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
     // Time of Flight (TOF)
     Double_t EmCaltof = clus->GetTOF();
     Double_t EmCalEnergy = clus->E();
-    fHistTOF->Fill(EmCaltof);
+    //fHistTOF->Fill(EmCaltof);
     //Print basic cluster information
     cout << "Cluster: " << icl+1 << "/" << nclus << "Phi: " << 
        cphi*TMath::RadToDeg() << "; Eta: " << ceta << "; NCells: " << nCells << endl;
@@ -299,17 +299,17 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 	//cout<<"R2: "<<R2<<endl;
 	    Double_t Rtof = sqrt(pow(R1, 2) + pow(R2,2));
 	    //cout<<"DeltaR: "<<DeltaR<<endl;
-        Double_t Remcal = sqrt(pow(ceta, 2) + pow(cphi, 2));
+        Double_t DeltaR = sqrt(pow(ceta-R1, 2) + pow(cphi-R2, 2));
         //These two if statements are for deciding which data you want to see.
 	//Putting the fill in the first one will show all matched cluster and the second, all unmatched clusters
-	if (abs(Remcal-Rtof)<.1 && matchedTOF[iToFTrack] == false)
+	if (abs(DeltaR)<.1 && matchedTOF[iToFTrack] == false)
         {
-	  fHistDeltaR->Fill(Remcal-Rtof);  
+	  fHistDeltaR->Fill(DeltaR);  
 	  matchedTOF[iToFTrack] = true;
         }
-        if (abs(Remcal-Rtof)<.1 && matchedTOF[iToFTrack] == false)
+        if ( icl+1==nclus && matchedTOF[iToFTrack] == false)
 	{
-	  //fHistDeltaR->Fill(Remcal-Rtof);
+	  fHistTOF->Fill(Rtof);
 	}
 
 	  }
@@ -339,8 +339,8 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
   c1->cd(1)->SetLogy();fHistPt->DrawCopy("E");
   
-  //TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);
-  //c2->cd(); fHistTOF->Draw();
+  TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);
+  c2->cd(); fHistTOF->Draw();
   
   //TCanvas *c3 = new TCanvas("histoTDC","TOF TDC",10,10,510,510);
   //c3->cd(); fHistNumTOFTDC->Draw();
