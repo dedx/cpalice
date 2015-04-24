@@ -71,21 +71,21 @@ void AliAnalysisTaskPJ::UserCreateOutputObjects()
   fHistPt->GetYaxis()->SetTitle("dN/dP_{T} (c/GeV)");
   fHistPt->SetMarkerStyle(kFullCircle);  
 
-  fHistTOF = new TH1F("fHistTOF", "Unmatched TOF R", 100, .8, 3.8);
-  fHistTOF->GetXaxis()->SetTitle("TOF (Sec)");
-  fHistTOF->GetYaxis()->SetTitle("Counts");
+  fHistTOF = new TH2F("fHistTOF", "Unmatched TOF Eta and Phi", 100, -.7, .7, 100, 0, .75*TMath::Pi());
+  fHistTOF->GetXaxis()->SetTitle("Eta");
+  fHistTOF->GetYaxis()->SetTitle("Phi");
 
-  fHistDeltaR = new TH1F("fHistDeltaR", "2D DeltaE-DeltaR distribution", 100, 0, .15);
-  fHistDeltaR->GetXaxis()->SetTitle("Delta R ()");
+  fHistDeltaR = new TH1F("fHistDeltaR", "DeltaR Distribution for Matched Clusters", 100, 0, .15);
+  fHistDeltaR->GetXaxis()->SetTitle("Delta R < .1");
   fHistDeltaR->GetYaxis()->SetTitle("cts");
 
-  fHistDeltaE = new TH2F("fHistDeltaE", "2D EMCal Energy-Delta R", 10000, 0, 5, 10000, .1, .5);
-  fHistDeltaE->GetXaxis()->SetTitle("Delta R");
-  fHistDeltaE->GetYaxis()->SetTitle("EMCal Energy");
+  fHistDeltaE = new TH2F("fHistDeltaE", "Unmatched EmCal Eta and Phi", 100, -.7, .7, 100, 0, .75*TMath::Pi());
+  fHistDeltaE->GetXaxis()->SetTitle("Eta");
+  fHistDeltaE->GetYaxis()->SetTitle("Phi");
 
-  fHistDeltaT = new TH2F("fHistDeltaT", "2D DeltaT-DeltaR", 10000, 0, 5, 10000, 0, 500);
-  fHistDeltaT->GetXaxis()->SetTitle("Delta R");
-  fHistDeltaT->GetYaxis()->SetTitle("Delta T");
+  fHistDeltaT = new TH1F("fHistDeltaT", "Unmatchd energy difference distribution", 10000, 0, .1*1E6);
+  fHistDeltaT->GetXaxis()->SetTitle("Delta E between TOF and EMCAL");
+  fHistDeltaT->GetYaxis()->SetTitle("Counts");
 
   fHistDeltaADC = new TH2F("fHistDeltaADC", "2D ADC-DeltaR", 10000, 0, 5, 10000, 100, 300);
   fHistDeltaADC->GetXaxis()->SetTitle("Delta R");
@@ -238,6 +238,11 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
   //Int_t nCells = clus->GetNCells();
   fHistNumCC->Fill(nclus);
   Bool_t matchedTOF[tofClusters->GetEntriesFast()];
+  Bool_t unMatchedTOF[tofClusters->GetEntriesFast()];
+  Bool_t unMatchedEmCal[nclus];
+  Bool_t matchedEmCal;
+  
+  matchedEmCal = false;
   for (Int_t icl = 0; icl < nclus; icl++) {    
     AliVCluster* clus = (AliVCluster*)caloClusters->At(icl);
     Int_t nCells = clus->GetNCells();
@@ -306,14 +311,43 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
         {
 	  fHistDeltaR->Fill(DeltaR);  
 	  matchedTOF[iToFTrack] = true;
+        matchedEmCal = true;
         }
         if ( icl+1==nclus && matchedTOF[iToFTrack] == false)
 	{
-	  fHistTOF->Fill(Rtof);
+	  fHistTOF->Fill(TOFeta, TOFphi);
+	  unMatchedTOF[iToFTrack] = true;
 	}
 
 	  }
-	  }}
+        if(matchedEmCal == false){fHistDeltaE->Fill(ceta, cphi); unMatchedEmCal[icl]=true;}
+	  }
+  }
+  for(Int_t icl=0; icl<nclus; icl++)
+    {
+      AliVCluster* clus = (AliVCluster*)caloClusters->At(icl);
+      if(unMatchedEmCal[icl]==true)
+	{
+	  Double_t energy = clus->E();
+	  for(Int_t iToFTrack = 0; iToFTrack<tofClusters->GetEntriesFast(); iToFTrack++)
+	      {
+		AliTOFcluster *cluster=(AliTOFcluster*)tofClusters->UncheckedAt(iToFTrack);
+		Float_t time =(AliTOFGeometry::TdcBinWidth()*cluster->GetTDC())*1E-3; // in ns
+		Float_t tot = (AliTOFGeometry::TdcBinWidth()*cluster->GetToT())*1E-3;//in ns
+		if(unMatchedTOF[iToFTrack]==true)
+		  {
+		    // Double_t veloc = 3.70/(time*1E3);
+		    // Double_t elecmass = (.511*1E6);
+		    //  Double_t c = (3.00*1E8);
+		    //  Double_t elecenergycalc = sqrt(pow((elecmass*pow(c,2)),2)+pow((elecmass*veloc*c/sqrt(1-pow((veloc/c),2))),2));
+		    //  if(abs(elecenergycalc-energy)<.1*1E6)
+		    //	{
+		    //	  fHistDeltaT->Fill(abs(elecenergycalc-energy));
+		    //	}
+		  }
+	      }
+	}
+    }
   //clean up to avoid mem leaks
   delete tofClusterTree;
   //Keep every 2000th event's info in histogram
@@ -351,11 +385,11 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   TCanvas *c5 = new TCanvas("histoDeltaR", "Tof DeltaR", 10,10,510,510);
   c5->cd(); fHistDeltaR->Draw();
 
-  // TCanvas *c9 = new TCanvas("histoDeltaT", "DeltaR-DeltaT", 10,10,510,510);
-  //c9->cd(); fHistDeltaT->Draw();
+  TCanvas *c9 = new TCanvas("histoDeltaT", "DeltaR-DeltaT", 10,10,510,510);
+  c9->cd(); fHistDeltaT->Draw();
 
-  // TCanvas *c6 = new TCanvas("histoDeltaE", "TOF-EMACAL Energy", 10,10,510,510);
-  // c6->cd();fHistDeltaE->Draw();
+  TCanvas *c6 = new TCanvas("histoDeltaE", "TOF-EMACAL Energy", 10,10,510,510);
+  c6->cd();fHistDeltaE->Draw();
 
   //  TCanvas *c7 = new TCanvas("histoDeltaADC", "TOF ADC-Delta R", 10, 10, 510, 510);
   //c7->cd();fHistDeltaADC->Draw();

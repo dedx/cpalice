@@ -24,11 +24,11 @@ class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
   AliVEvent *fESD;    //! ESD object
   TList       *fOutputList; //! Output list
   TH1F        *fHistPt; //! Track Pt spectrum
-  TH1F        *fHistTOF; //Track TOF Spectrum
+  TH2F        *fHistTOF; //Track TOF Spectrum
   TH1F        *fHistNumTOFTOT;
   TH1F        *fHistNumTOFTDC;
   TH1F        *fHistDeltaR;
-  TH2F        *fHistDeltaT;
+  TH1F        *fHistDeltaT;
   TH2F        *fHistEADC;
   TH2F        *fHistDeltaE;
   TH2F        *fHistDeltaADC;
