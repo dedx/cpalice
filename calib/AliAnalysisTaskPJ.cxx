@@ -25,7 +25,7 @@ ClassImp(AliAnalysisTaskPJ)
 //________________________________________________________________________
 AliAnalysisTaskPJ::AliAnalysisTaskPJ(const char *name) 
 : AliAnalysisTaskSE(name), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
-  fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
+  fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistRogueVeloc(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
   fEvtNum(0),fHistNum(0)
 {
   // Constructor
@@ -46,7 +46,7 @@ AliAnalysisTaskPJ::AliAnalysisTaskPJ(const char *name)
 //________________________________________________________________________
 AliAnalysisTaskPJ::AliAnalysisTaskPJ() 
   : AliAnalysisTaskSE(), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
-    fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
+    fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistRogueVeloc(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
     fEvtNum(0),fHistNum(0)
 {
   // Default Constructor
@@ -74,6 +74,10 @@ void AliAnalysisTaskPJ::UserCreateOutputObjects()
   fHistTOF = new TH2F("fHistTOF", "Unmatched TOF Eta and Phi", 100, -.7, .7, 100, 0, .75*TMath::Pi());
   fHistTOF->GetXaxis()->SetTitle("Eta");
   fHistTOF->GetYaxis()->SetTitle("Phi");
+
+  fHistRogueVeloc = new TH1F("fHistRogueVeloc", "Rogue Velocities Greater then C", 100, 1E8, 5E8);
+  fHistRogueVeloc->GetXaxis()->SetTitle("Velocity");
+  fHistRogueVeloc->GetYaxis()->SetTitle("Counts");
 
   fHistDeltaR = new TH1F("fHistDeltaR", "DeltaR Distribution for Matched Clusters", 100, 0, .15);
   fHistDeltaR->GetXaxis()->SetTitle("Delta R < .1");
@@ -332,18 +336,36 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 	  for(Int_t iToFTrack = 0; iToFTrack<tofClusters->GetEntriesFast(); iToFTrack++)
 	      {
 		AliTOFcluster *cluster=(AliTOFcluster*)tofClusters->UncheckedAt(iToFTrack);
+		Float_t TOFx = cluster->GetR()*TMath::Cos(cluster->GetPhi());
+		Float_t TOFy = cluster->GetR()*TMath::Sin(cluster->GetPhi());
+		Float_t TOFz = cluster->GetZ();
+
+		TVector3 TOFvpos(TOFx,TOFy,TOFz);
+		Double_t TOFeta = TOFvpos.Eta();
 		Float_t time =(AliTOFGeometry::TdcBinWidth()*cluster->GetTDC())*1E-3; // in ns
 		Float_t tot = (AliTOFGeometry::TdcBinWidth()*cluster->GetToT())*1E-3;//in ns
 		if(unMatchedTOF[iToFTrack]==true)
 		  {
-		    // Double_t veloc = 3.70/(time*1E3);
-		    // Double_t elecmass = (.511*1E6);
-		    //  Double_t c = (3.00*1E8);
-		    //  Double_t elecenergycalc = sqrt(pow((elecmass*pow(c,2)),2)+pow((elecmass*veloc*c/sqrt(1-pow((veloc/c),2))),2));
-		    //  if(abs(elecenergycalc-energy)<.1*1E6)
-		    //	{
-		    //	  fHistDeltaT->Fill(abs(elecenergycalc-energy));
-		    //	}
+		    if (time!=0){
+		      cout<<"Time"<<time*1E-9<<"\n";
+		      Double_t veloc = (3.70/(TMath::Sin(TMath::Pi()/2-(2*TMath::ATan(TMath::Exp(-TOFeta)))))/(time*1E-9));
+		      cout<<"Velocity"<<veloc<<"\n";
+		     Double_t elecmass = (.511*1E6);
+		     Double_t c = (3.00*1E8);
+		     cout<<(1-pow((veloc/c),2))<<"\n";
+		     if((pow((veloc/c),2))<1){
+		       cout<<"EMCAL Energy"<<energy*1E9<<"\n";
+		       Double_t elecenergycalc = sqrt(pow((elecmass),2)+pow((elecmass*veloc/sqrt(1-pow((veloc/c),2))),2));
+		       cout<<"Energy Diff"<<(abs(elecenergycalc-energy*1E9))<<"\n";
+		     if(abs(elecenergycalc-energy*1E9)<1*1E6)
+		   	{
+		    	  fHistDeltaT->Fill(abs(elecenergycalc-energy));
+		    	}
+		     }
+		     else{
+		       fHistRogueVeloc->Fill(veloc);
+			 }
+		    }
 		  }
 	      }
 	}
@@ -376,6 +398,8 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);
   c2->cd(); fHistTOF->Draw();
   
+  TCanvas *c3 = new TCanvas("histoveloc", "Rogue Velocities", 10,10,510,510);
+  c3->cd(); fHistRogueVeloc->Draw();
   //TCanvas *c3 = new TCanvas("histoTDC","TOF TDC",10,10,510,510);
   //c3->cd(); fHistNumTOFTDC->Draw();
   
