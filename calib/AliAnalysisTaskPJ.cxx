@@ -25,7 +25,7 @@ ClassImp(AliAnalysisTaskPJ)
 //________________________________________________________________________
 AliAnalysisTaskPJ::AliAnalysisTaskPJ(const char *name) 
 : AliAnalysisTaskSE(name), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
-  fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistRogueVeloc(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
+  fHistDeltaR(0),fHistDeltaT(0),fHistTime(0),fHistRogueVeloc(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
   fEvtNum(0),fHistNum(0)
 {
   // Constructor
@@ -46,7 +46,7 @@ AliAnalysisTaskPJ::AliAnalysisTaskPJ(const char *name)
 //________________________________________________________________________
 AliAnalysisTaskPJ::AliAnalysisTaskPJ() 
   : AliAnalysisTaskSE(), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
-    fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistRogueVeloc(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
+    fHistDeltaR(0),fHistDeltaT(0),fHistTime(0),fHistDeltaE(0),fHistRogueVeloc(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
     fEvtNum(0),fHistNum(0)
 {
   // Default Constructor
@@ -95,9 +95,9 @@ void AliAnalysisTaskPJ::UserCreateOutputObjects()
   fHistDeltaADC->GetXaxis()->SetTitle("Delta R");
   fHistDeltaADC->GetYaxis()->SetTitle("TOF ADC");
 
-  fHistEADC = new TH2F("fHistEADC", "Ratio of EMCAL Energy to ADC at small Delta R", 10000, 0, 500, 10000, 0, .05);
-  fHistEADC->GetXaxis()->SetTitle("TOF Cluster");
-  fHistEADC->GetYaxis()->SetTitle("E/ADC");
+  fHistTime = new TH1F("fHistTime", "Time of flight to TOF", 10000, 0, 300);
+  fHistTime->GetXaxis()->SetTitle("Time");
+  fHistTime->GetYaxis()->SetTitle("Counts");
 
   for (int i = 0; i < 100; i++) {
     char name[100];sprintf(name,"fHistEtaPhiCC%d",i);
@@ -162,6 +162,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
   esd->GetVertex()->GetXYZ(vertex_position);
   
   TTree* tofClusterTree = handler->GetTreeR("TOF");
+  TTree* Tree = handler->GetTreeR("TOF");
   if (!tofClusterTree) {printf("<WARN>No TOF clusters!\n");return;}
   
   TBranch* tofClusterBranch = tofClusterTree->GetBranch("TOF");
@@ -347,7 +348,8 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 		if(unMatchedTOF[iToFTrack]==true)
 		  {
 		    if (time!=0){
-		      cout<<"Time"<<time*1E-9<<"\n";
+		      cout<<"Time"<<time<<"\n";
+		      fHistTime->Fill(time);
 		      Double_t veloc = (3.70/(TMath::Sin(TMath::Pi()/2-(2*TMath::ATan(TMath::Exp(-TOFeta)))))/(time*1E-9));
 		      cout<<"Velocity"<<veloc<<"\n";
 		     Double_t elecmass = (.511*1E6);
@@ -418,6 +420,6 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   //  TCanvas *c7 = new TCanvas("histoDeltaADC", "TOF ADC-Delta R", 10, 10, 510, 510);
   //c7->cd();fHistDeltaADC->Draw();
 
-  //  TCanvas *c8 = new TCanvas("histoEADC", "E/ADC", 10,10,510,510);
-  //c8->cd();fHistEADC->Draw();
+  TCanvas *c8 = new TCanvas("histoTime", "Time", 10,10,510,510);
+  c8->cd();fHistTime->Draw();
 }

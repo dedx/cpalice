@@ -30,7 +30,7 @@ class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
   TH1F        *fHistRogueVeloc;
   TH1F        *fHistDeltaR;
   TH1F        *fHistDeltaT;
-  TH2F        *fHistEADC;
+  TH1F        *fHistTime;
   TH2F        *fHistDeltaE;
   TH2F        *fHistDeltaADC;
   TH2F        *fHistEtaPhiCC[100];
