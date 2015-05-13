@@ -25,7 +25,7 @@ ClassImp(AliAnalysisTaskPJ)
 //________________________________________________________________________
 AliAnalysisTaskPJ::AliAnalysisTaskPJ(const char *name) 
 : AliAnalysisTaskSE(name), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
-  fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
+  fHistDeltaR(0),fHistDeltaT(0),fHistTime(0),fHistRogueVeloc(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
   fEvtNum(0),fHistNum(0)
 {
   // Constructor
@@ -46,7 +46,7 @@ AliAnalysisTaskPJ::AliAnalysisTaskPJ(const char *name)
 //________________________________________________________________________
 AliAnalysisTaskPJ::AliAnalysisTaskPJ() 
   : AliAnalysisTaskSE(), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
-    fHistDeltaR(0),fHistDeltaT(0),fHistEADC(0),fHistDeltaE(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
+    fHistDeltaR(0),fHistDeltaT(0),fHistTime(0),fHistDeltaE(0),fHistRogueVeloc(0),fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),
     fEvtNum(0),fHistNum(0)
 {
   // Default Constructor
@@ -71,29 +71,33 @@ void AliAnalysisTaskPJ::UserCreateOutputObjects()
   fHistPt->GetYaxis()->SetTitle("dN/dP_{T} (c/GeV)");
   fHistPt->SetMarkerStyle(kFullCircle);  
 
-  fHistTOF = new TH1F("fHistTOF", "TOF distribution", 100, 0, 1E-6);
-  fHistTOF->GetXaxis()->SetTitle("TOF (Sec)");
-  fHistTOF->GetYaxis()->SetTitle("Counts");
+  fHistTOF = new TH2F("fHistTOF", "Unmatched TOF Eta and Phi", 100, -.7, .7, 100, 0, .75*TMath::Pi());
+  fHistTOF->GetXaxis()->SetTitle("Eta");
+  fHistTOF->GetYaxis()->SetTitle("Phi");
 
-  fHistDeltaR = new TH1F("fHistDeltaR", "2D DeltaE-DeltaR distribution", 10000, 0, 5);
-  fHistDeltaR->GetXaxis()->SetTitle("Delta R ()");
+  fHistRogueVeloc = new TH1F("fHistRogueVeloc", "Rogue Velocities Greater then C", 100, 1E8, 5E8);
+  fHistRogueVeloc->GetXaxis()->SetTitle("Velocity");
+  fHistRogueVeloc->GetYaxis()->SetTitle("Counts");
+
+  fHistDeltaR = new TH1F("fHistDeltaR", "DeltaR Distribution for Matched Clusters", 100, 0, .15);
+  fHistDeltaR->GetXaxis()->SetTitle("Delta R < .1");
   fHistDeltaR->GetYaxis()->SetTitle("cts");
 
-  fHistDeltaE = new TH2F("fHistDeltaE", "2D EMCal Energy-Delta R", 10000, 0, 5, 10000, .1, .5);
-  fHistDeltaE->GetXaxis()->SetTitle("Delta R");
-  fHistDeltaE->GetYaxis()->SetTitle("EMCal Energy");
+  fHistDeltaE = new TH2F("fHistDeltaE", "Unmatched EmCal Eta and Phi", 100, -.7, .7, 100, 0, .75*TMath::Pi());
+  fHistDeltaE->GetXaxis()->SetTitle("Eta");
+  fHistDeltaE->GetYaxis()->SetTitle("Phi");
 
-  fHistDeltaT = new TH2F("fHistDeltaT", "2D DeltaT-DeltaR", 10000, 0, 5, 10000, 0, 500);
-  fHistDeltaT->GetXaxis()->SetTitle("Delta R");
-  fHistDeltaT->GetYaxis()->SetTitle("Delta T");
+  fHistDeltaT = new TH1F("fHistDeltaT", "Unmatchd energy difference distribution", 10000, 0, .1*1E6);
+  fHistDeltaT->GetXaxis()->SetTitle("Delta E between TOF and EMCAL");
+  fHistDeltaT->GetYaxis()->SetTitle("Counts");
 
   fHistDeltaADC = new TH2F("fHistDeltaADC", "2D ADC-DeltaR", 10000, 0, 5, 10000, 100, 300);
   fHistDeltaADC->GetXaxis()->SetTitle("Delta R");
   fHistDeltaADC->GetYaxis()->SetTitle("TOF ADC");
 
-  fHistEADC = new TH2F("fHistEADC", "Ratio of EMCAL Energy to ADC at small Delta R", 10000, 0, 500, 10000, 0, .05);
-  fHistEADC->GetXaxis()->SetTitle("TOF Cluster");
-  fHistEADC->GetYaxis()->SetTitle("E/ADC");
+  fHistTime = new TH1F("fHistTime", "Time of flight to TOF", 10000, 0, 300);
+  fHistTime->GetXaxis()->SetTitle("Time");
+  fHistTime->GetYaxis()->SetTitle("Counts");
 
   for (int i = 0; i < 100; i++) {
     char name[100];sprintf(name,"fHistEtaPhiCC%d",i);
@@ -158,6 +162,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
   esd->GetVertex()->GetXYZ(vertex_position);
   
   TTree* tofClusterTree = handler->GetTreeR("TOF");
+  TTree* Tree = handler->GetTreeR("TOF");
   if (!tofClusterTree) {printf("<WARN>No TOF clusters!\n");return;}
   
   TBranch* tofClusterBranch = tofClusterTree->GetBranch("TOF");
@@ -203,12 +208,13 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
   
   
   printf("<INFO>Ntracks=%d\n",fInputEvent->GetNumberOfTracks());
-  
+
   // Track loop to fill a pT spectrum
   for (Int_t iTracks = 0; iTracks < fInputEvent->GetNumberOfTracks(); iTracks++) {
     //AliVParticle* track = fInputEvent->GetTrack(iTracks);
     AliESDtrack* track = (AliESDtrack*)fInputEvent->GetTrack(iTracks);
     if (!track) { printf("ERROR: Could not receive track %d\n", iTracks);continue;}
+    printf("Track %d has been matched to EMCAL %d", track->GetID(), track->GetEMCALcluster());
     //AliTOFcluster* tof = (AliTOFcluster*);
     //tof.fIdx = track->GetTOFcluster();
     //EmCal = new AliESDCaloCluster();
@@ -236,6 +242,12 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
   Int_t nclus = caloClusters->GetEntries();   
   //Int_t nCells = clus->GetNCells();
   fHistNumCC->Fill(nclus);
+  Bool_t matchedTOF[tofClusters->GetEntriesFast()];
+  Bool_t unMatchedTOF[tofClusters->GetEntriesFast()];
+  Bool_t unMatchedEmCal[nclus];
+  Bool_t matchedEmCal;
+  
+  matchedEmCal = false;
   for (Int_t icl = 0; icl < nclus; icl++) {    
     AliVCluster* clus = (AliVCluster*)caloClusters->At(icl);
     Int_t nCells = clus->GetNCells();
@@ -255,7 +267,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
     // Time of Flight (TOF)
     Double_t EmCaltof = clus->GetTOF();
     Double_t EmCalEnergy = clus->E();
-    fHistTOF->Fill(EmCaltof);
+    //fHistTOF->Fill(EmCaltof);
     //Print basic cluster information
     cout << "Cluster: " << icl+1 << "/" << nclus << "Phi: " << 
        cphi*TMath::RadToDeg() << "; Eta: " << ceta << "; NCells: " << nCells << endl;
@@ -289,20 +301,77 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 	//cout<<"TOFeta: "<<TOFeta<<endl;
 	//cout<<"cphi: "<<cphi<<endl;
 	//cout<<"TOFphi: "<<TOFphi<<endl;
-	if (TOFphi < 3.15 && TOFphi > 1.35 && TOFeta < .7 && TOFeta > -.7)
+	if (TOFphi < 3.5 && TOFphi > 1.0 && TOFeta < .9 && TOFeta > -.9)
 	  {
-	    Double_t R1 = ceta - TOFeta;
+	    Double_t R1 = TOFeta;
 	//cout<<"R1: "<<R1<<endl;
-	    Double_t R2 = cphi-TOFphi;
+	    Double_t R2 = TOFphi;
 	//cout<<"R2: "<<R2<<endl;
-	    Double_t DeltaR = sqrt(pow(R1, 2) + pow(R2,2));
+	    Double_t Rtof = sqrt(pow(R1, 2) + pow(R2,2));
 	    //cout<<"DeltaR: "<<DeltaR<<endl;
-	    fHistDeltaR->Fill(DeltaR);
-	    fHistDeltaT->Fill(DeltaR, EmCaltof-time);
-	    if (DeltaR < .05 && DeltaR > .01){fHistDeltaE->Fill(DeltaR, EmCalEnergy);fHistDeltaADC->Fill(DeltaR, TOFADC);
-	      if (TOFADC!=0){fHistEADC->Fill(iToFTrack, EmCalEnergy/TOFADC);}}
+        Double_t DeltaR = sqrt(pow(ceta-R1, 2) + pow(cphi-R2, 2));
+        //These two if statements are for deciding which data you want to see.
+	//Putting the fill in the first one will show all matched cluster and the second, all unmatched clusters
+	if (abs(DeltaR)<.1 && matchedTOF[iToFTrack] == false)
+        {
+	  fHistDeltaR->Fill(DeltaR);  
+	  matchedTOF[iToFTrack] = true;
+        matchedEmCal = true;
+        }
+        if ( icl+1==nclus && matchedTOF[iToFTrack] == false)
+	{
+	  fHistTOF->Fill(TOFeta, TOFphi);
+	  unMatchedTOF[iToFTrack] = true;
+	}
+
 	  }
-	  }}
+        if(matchedEmCal == false){fHistDeltaE->Fill(ceta, cphi); unMatchedEmCal[icl]=true;}
+	  }
+  }
+  for(Int_t icl=0; icl<nclus; icl++)
+    {
+      AliVCluster* clus = (AliVCluster*)caloClusters->At(icl);
+      if(unMatchedEmCal[icl]==true)
+	{
+	  Double_t energy = clus->E();
+	  for(Int_t iToFTrack = 0; iToFTrack<tofClusters->GetEntriesFast(); iToFTrack++)
+	      {
+		AliTOFcluster *cluster=(AliTOFcluster*)tofClusters->UncheckedAt(iToFTrack);
+		Float_t TOFx = cluster->GetR()*TMath::Cos(cluster->GetPhi());
+		Float_t TOFy = cluster->GetR()*TMath::Sin(cluster->GetPhi());
+		Float_t TOFz = cluster->GetZ();
+
+		TVector3 TOFvpos(TOFx,TOFy,TOFz);
+		Double_t TOFeta = TOFvpos.Eta();
+		Float_t time =(AliTOFGeometry::TdcBinWidth()*cluster->GetTDC())*1E-3; // in ns
+		Float_t tot = (AliTOFGeometry::TdcBinWidth()*cluster->GetToT())*1E-3;//in ns
+		if(unMatchedTOF[iToFTrack]==true)
+		  {
+		    if (time!=0){
+		      cout<<"Time"<<time<<"\n";
+		      fHistTime->Fill(time);
+		      Double_t veloc = (3.70/(TMath::Sin(TMath::Pi()/2-(2*TMath::ATan(TMath::Exp(-TOFeta)))))/(time*1E-9));
+		      cout<<"Velocity"<<veloc<<"\n";
+		     Double_t elecmass = (.511*1E6);
+		     Double_t c = (3.00*1E8);
+		     cout<<(1-pow((veloc/c),2))<<"\n";
+		     if((pow((veloc/c),2))<1){
+		       cout<<"EMCAL Energy"<<energy*1E9<<"\n";
+		       Double_t elecenergycalc = sqrt(pow((elecmass),2)+pow((elecmass*veloc/sqrt(1-pow((veloc/c),2))),2));
+		       cout<<"Energy Diff"<<(abs(elecenergycalc-energy*1E9))<<"\n";
+		     if(abs(elecenergycalc-energy*1E9)<1*1E6)
+		   	{
+		    	  fHistDeltaT->Fill(abs(elecenergycalc-energy));
+		    	}
+		     }
+		     else{
+		       fHistRogueVeloc->Fill(veloc);
+			 }
+		    }
+		  }
+	      }
+	}
+    }
   //clean up to avoid mem leaks
   delete tofClusterTree;
   //Keep every 2000th event's info in histogram
@@ -325,12 +394,14 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   fHistPt = dynamic_cast<TH1F*> (fOutputList->At(0));
   if (!fHistPt) {printf("ERROR: fHistPt not available\n");return;}
  
-  //TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
-  //c1->cd(1)->SetLogy();fHistPt->DrawCopy("E");
+  TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
+  c1->cd(1)->SetLogy();fHistPt->DrawCopy("E");
   
-  //TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);
-  //c2->cd(); fHistTOF->Draw();
+  TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);
+  c2->cd(); fHistTOF->Draw();
   
+  TCanvas *c3 = new TCanvas("histoveloc", "Rogue Velocities", 10,10,510,510);
+  c3->cd(); fHistRogueVeloc->Draw();
   //TCanvas *c3 = new TCanvas("histoTDC","TOF TDC",10,10,510,510);
   //c3->cd(); fHistNumTOFTDC->Draw();
   
@@ -346,8 +417,9 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   TCanvas *c6 = new TCanvas("histoDeltaE", "TOF-EMACAL Energy", 10,10,510,510);
   c6->cd();fHistDeltaE->Draw();
 
-  TCanvas *c7 = new TCanvas("histoDeltaADC", "TOF ADC-Delta R", 10, 10, 510, 510);
-  c7->cd();fHistDeltaADC->Draw();
+  //  TCanvas *c7 = new TCanvas("histoDeltaADC", "TOF ADC-Delta R", 10, 10, 510, 510);
+  //c7->cd();fHistDeltaADC->Draw();
 
-  TCanvas *c8 = new TCanvas("histoEADC", "E/ADC", 10,10,510,510);
-  c8->cd();fHistEADC->Draw();}
+  TCanvas *c8 = new TCanvas("histoTime", "Time", 10,10,510,510);
+  c8->cd();fHistTime->Draw();
+}

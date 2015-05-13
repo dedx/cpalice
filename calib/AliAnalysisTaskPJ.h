@@ -24,12 +24,13 @@ class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
   AliVEvent *fESD;    //! ESD object
   TList       *fOutputList; //! Output list
   TH1F        *fHistPt; //! Track Pt spectrum
-  TH1F        *fHistTOF; //Track TOF Spectrum
+  TH2F        *fHistTOF; //Track TOF Spectrum
   TH1F        *fHistNumTOFTOT;
   TH1F        *fHistNumTOFTDC;
+  TH1F        *fHistRogueVeloc;
   TH1F        *fHistDeltaR;
-  TH2F        *fHistDeltaT;
-  TH2F        *fHistEADC;
+  TH1F        *fHistDeltaT;
+  TH1F        *fHistTime;
   TH2F        *fHistDeltaE;
   TH2F        *fHistDeltaADC;
   TH2F        *fHistEtaPhiCC[100];
@@ -38,7 +39,6 @@ class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
   TH1F        *fHistNumTC;
   Int_t       fEvtNum; // keep track of event number
   Int_t       fHistNum; // store every Nth event's info in histogram
-  
 
   AliAnalysisTaskPJ(const AliAnalysisTaskPJ&); // not implemented
   AliAnalysisTaskPJ& operator=(const AliAnalysisTaskPJ&); // not implemented
