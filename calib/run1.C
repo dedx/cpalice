@@ -89,5 +89,5 @@ AliAnalysisTask* run1()
 
   if (!mgr->InitAnalysis()) return;
   mgr->PrintStatus();
-  mgr->StartAnalysis("local", chain, 1000);
+  mgr->StartAnalysis("local", chain, 10000);
 }

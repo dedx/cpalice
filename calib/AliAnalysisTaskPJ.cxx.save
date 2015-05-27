@@ -102,16 +102,17 @@ void AliAnalysisTaskPJ::UserCreateOutputObjects()
 
   for (int i = 0; i < 100; i++) {
     char name[100];sprintf(name,"fHistEtaPhiCC%d",i);
-    fHistEtaPhiCC[i] = new TH2F(name,name,100,-.9,.9,100,100,190);
-    fHistEtaPhiCC[i]->GetXaxis()->SetTitle("#eta");
-    fHistEtaPhiCC[i]->GetYaxis()->SetTitle("#phi"); }
+    fHistEta
+PhiCC[i] = new TH2F(name,name,100,1.35,3.15,100,-1.,1);
+    fHistEtaPhiCC[i]->GetXaxis()->SetTitle("#phi");
+    fHistEtaPhiCC[i]->GetYaxis()->SetTitle("#eta"); }
 
 
   for (int i = 0; i < 100; i++) {
     char name[100]; sprintf(name,"fHistEtaPhiTC%d",i);
-    fHistEtaPhiTC[i] = new TH2F(name,name,100,-.9,.9,100,100,190);
-    fHistEtaPhiTC[i]->GetXaxis()->SetTitle("#eta");
-    fHistEtaPhiTC[i]->GetYaxis()->SetTitle("#phi");
+    fHistEtaPhiTC[i] = new TH2F(name,name,100,1.35,3.15,100,-1.,1);
+    fHistEtaPhiTC[i]->GetXaxis()->SetTitle("#phi");
+    fHistEtaPhiTC[i]->GetYaxis()->SetTitle("#eta");
   }
 
   fHistNumCC = new TH1F("fHistNumCC", "# of Calo clusters per event", 100,0,100);
@@ -199,7 +200,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 	//	Float_t time =(AliTOFGeometry::TdcBinWidth()*cluster->GetTDC())*1E-3; // in ns
         //Float_t tot = (AliTOFGeometry::TdcBinWidth()*cluster->GetToT())*1E-3;//in ns
 	//printf("cphi,ceta = %.3f,%.3f\n",cphi,ceta);
-	//if (fEvtNum %2000 == 0 && fHistNum < 100) {fHistEtaPhiTC[fHistNum]->Fill(cphi,ceta);}
+	if (fEvtNum %2000 == 0 && fHistNum < 100) {fHistEtaPhiTC[fHistNum]->Fill(cphi,ceta);}
 	//fHistNumTOFTOT-> Fill(tot);
 	//fHistNumTOFTDC->Fill(time);
       }
@@ -263,7 +264,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
     Double_t ceta = vpos.Eta();
     // cout<<"Calo Cluster Phi Value is:  "<<cphi<<endl; cout<<"Calo Cluster Eta Value is: "<<ceta<<endl;
     
-   // if (fEvtNum%2000 == 0 && fHistNum < 100) {fHistEtaPhiCC[fHistNum]->Fill(cphi, ceta);}
+    if (fEvtNum%2000 == 0 && fHistNum < 100) {fHistEtaPhiCC[fHistNum]->Fill(cphi, ceta);}
     
     // Time of Flight (TOF)
     Double_t EmCaltof = clus->GetTOF();
@@ -321,12 +322,12 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
         }
         if ( icl+1==nclus && matchedTOF[iToFTrack] == false)
 	{
-		if (fEvtNum%2000 == 0 && fHistNum < 100){fHistEtaPhiTC[fHistNum]->Fill(TOFeta, TOFphi*180.0/TMath::Pi());}
+	  fHistTOF->Fill(TOFeta, TOFphi);
 	  unMatchedTOF[iToFTrack] = true;
 	}
 
 	  }
-        if(matchedEmCal == false){if (fEvtNum%2000 == 0 && fHistNum < 100){fHistEtaPhiCC[fHistNum]->Fill(ceta, cphi*180.0/TMath::Pi());} unMatchedEmCal[icl]=true;}
+        if(matchedEmCal == false){fHistDeltaE->Fill(ceta, cphi); unMatchedEmCal[icl]=true;}
 	  }
   }
   for(Int_t icl=0; icl<nclus; icl++)
@@ -395,26 +396,11 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   fHistPt = dynamic_cast<TH1F*> (fOutputList->At(0));
   if (!fHistPt) {printf("ERROR: fHistPt not available\n");return;}
  
-  TCanvas *h = new TCanvas("histoEtaPhi", "EtaPhi", 10,10,510,510);
-  h->cd();
-  char str[32];
-  for(int i=0;i<101;i++){
-  sprintf(str, "./EtaPhiHistos/TofEtaPhi%d.pdf", i);
-  h->Clear();
-  fHistEtaPhiTC[i]->Draw();
-  h->SaveAs(str);
-  sprintf(str, "./EtaPhiHistos/EMCalEtaPhi%d.pdf", i);
-  h->Clear(); 
-  fHistEtaPhiCC[i]->Draw();
-  h->SaveAs(str);
-  }
-
-   
   TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
   c1->cd(1)->SetLogy();fHistPt->DrawCopy("E");
   
-  //TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);
-  //c2->cd(); fHistTOF->Draw();
+  TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);
+  c2->cd(); fHistTOF->Draw();
   
   TCanvas *c3 = new TCanvas("histoveloc", "Rogue Velocities", 10,10,510,510);
   c3->cd(); fHistRogueVeloc->Draw();
@@ -430,8 +416,8 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   TCanvas *c9 = new TCanvas("histoDeltaT", "DeltaR-DeltaT", 10,10,510,510);
   c9->cd(); fHistDeltaT->Draw();
 
-  //TCanvas *c6 = new TCanvas("histoDeltaE", "TOF-EMACAL Energy", 10,10,510,510);
-//  c6->cd();fHistDeltaE->Draw();
+  TCanvas *c6 = new TCanvas("histoDeltaE", "TOF-EMACAL Energy", 10,10,510,510);
+  c6->cd();fHistDeltaE->Draw();
 
   //  TCanvas *c7 = new TCanvas("histoDeltaADC", "TOF ADC-Delta R", 10, 10, 510, 510);
   //c7->cd();fHistDeltaADC->Draw();
