@@ -27,10 +27,13 @@ class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
   TH2F        *fHistTOF; //Track TOF Spectrum
   TH1F        *fHistNumTOFTOT;
   TH1F        *fHistNumTOFTDC;
-  TH2F        *fHistRogueVeloc;
-  TH1F        *fHistDeltaR;
-  TH1F        *fHistDeltaT;
-  TH1F        *fHistTime;
+  TH1F        *fHistUnmatchedClusTOF;
+  TH1F        *fHistUnmatchedClusEM;
+  TH1F        *fHistUnmatchedTOFEnergy;
+  TH1F        *fHistUnmatchedEMEnergy;
+  TH1F        *fHistTotalClusTOF;
+  TH1F        *fHistTotalClusEM;
+  TH1F        *fHistUnmatchedTOF;
   TH2F        *fHistDeltaE;
   TH2F        *fHistDeltaADC;
   TH2F        *fHistEtaPhiCC[100];
