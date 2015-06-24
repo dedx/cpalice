@@ -66,9 +66,9 @@ AliAnalysisTask* run1()
   // Add task(s)
   mgr->AddTask(taskpj);
 
-  gROOT->LoadMacro("$ROOTSYS/macros/CreateESDChain.C");
+  gROOT->LoadMacro("./CreateESDChain.C");
   //  gROOT->LoadMacro("$ALICE_ROOT/PWG0/CreateESDChain.C");
-  TChain* chain = CreateChain("esdTree","run_149881NoB.txt", 100);
+  TChain* chain = CreateChain("esdTree","run_149881NoB.txt", 10000);
 
   // Create containers for input/output
   AliAnalysisDataContainer *cinput = mgr->GetCommonInputContainer();
@@ -89,5 +89,5 @@ AliAnalysisTask* run1()
 
   if (!mgr->InitAnalysis()) return;
   mgr->PrintStatus();
-  mgr->StartAnalysis("local", chain, 10);
+  mgr->StartAnalysis("local", chain, 1000000);
 }

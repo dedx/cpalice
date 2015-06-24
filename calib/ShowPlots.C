@@ -1,9 +1,9 @@
 void ShowPlots() {
 
-  TFile *f = new TFile("Pt.ESD.1.root"); 
+  TFile *f = new TFile("PJ.Calib.root"); 
   TList *myList = (TList*) f->Get("chistpt");
 
-  TH1F* fHistEtaPhiCC[100];
+  /*  TH1F* fHistEtaPhiCC[100];
   TH1F* fHistEtaPhiTC[100];
 
   char nameTC[100];
@@ -33,6 +33,13 @@ void ShowPlots() {
       leg->Draw();
 
     }
-  }
+    }*/
+  for(TIterator* myIterator=MyList->MakeIterator(); myIterator*; myIterator->Next();)
+    {
+      TCanvas *c1 = new TCanvas();
+      c1->cd();
+      gStyle->SetOptStat(0);
+      myIterator->Draw();
+    }
 
 }

@@ -18,6 +18,7 @@ class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
   
   virtual void   UserCreateOutputObjects();
   virtual void   UserExec(Option_t *option);
+  virtual Double_t CalcMass(Double_t MassHyp,Double_t time, Double_t eta);
   virtual void   Terminate(Option_t *);
   
  private:
@@ -33,6 +34,7 @@ class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
   TH1F        *fHistUnmatchedEMEnergy;
   TH2F        *fHistTOFEMEnergyMatch;
   TH1F        *fHistTotalClusTOF;
+  TH1F        *fHistTotalClusALLTOF;
   TH1F        *fHistTotalClusEM;
   TH1F        *fHistUnmatchedTOF;
   TH2F        *fHistDeltaE;
