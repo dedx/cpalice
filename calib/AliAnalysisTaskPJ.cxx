@@ -391,6 +391,9 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 
       TVector3 TOFvpos(TOFx,TOFy,TOFz);
       Double_t TOFeta = TOFvpos.Eta();
+      Double32_t time =(AliTOFGeometry::TdcBinWidth()*cluster->GetTDC\
+			())*1E-3; // in ns
+
       if(unMatchedTOF[iToFTrack]==true)
 	{
 	  for(Int_t iToFTrack2 = iToFTrack+1; iToFTrack2<tofClusters->GetEntriesFast(); iToFTrack2++)
@@ -402,9 +405,11 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 
 	      TVector3 TOFvpos2(TOFx2,TOFy2,TOFz2);
 	      Double_t TOFeta2 = TOFvpos2.Eta();
-	      
+	      Double32_t time2 =(AliTOFGeometry::TdcBinWidth()*cluster2->GetTDC\
+				())*1E-3; // in ns
 	      Double_t DeltaRpair = sqrt(pow(TOFeta2-TOFeta,2)+pow(cluster2->GetPhi()-cluster->GetPhi(),2));
-	      if(unMatchedTOF[iToFTrack2]==true && DeltaRpair<0.01)
+	      Double_t DeltaT = abs(time2-time);
+	      if(unMatchedTOF[iToFTrack2]==true && DeltaRpair<0.01 && DeltaT<10)
 		{
 		  ClosePair++;
 		}
@@ -503,9 +508,9 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   }
 
   */  
-  TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
+  /*TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
   c1->cd();fHistTotalClusALLTOF->Draw();
- 
+  */
   TCanvas *c8 = new TCanvas("histo","TOF",10,10,510,510);
   c8->cd(); fHistUnmatchedClusPair->Draw();
   
@@ -514,7 +519,7 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   
   TCanvas *c2 = new TCanvas("histoTOFunmatchedclus","Total # of Unmatched Clusters per Event in TOF Restricted to EMCAL ROI",10,10,510,510);
   c2->cd(); fHistUnmatchedClusTOF->Draw();
-  
+  /*
   TCanvas *c4 = new TCanvas("histoEMEnergy","Energy Distribution for Unmatched Clusters in Emcal",10,10,510,510);
   c4->cd(); fHistUnmatchedEMEnergy->Draw();
   
@@ -529,5 +534,5 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   
   TCanvas *c7 = new TCanvas("histoUnmatchedDeltaRDeltaE", "Delta R vs. Delta E for Unmatched Clusters", 10, 10, 510, 510);
   c7->cd();fHistTOFEMEnergyMatch->Draw("COLZ");
-  
+  */
 }
