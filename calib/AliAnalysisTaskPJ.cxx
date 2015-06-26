@@ -29,7 +29,7 @@ AliAnalysisTaskPJ::AliAnalysisTaskPJ(const char *name)
 : AliAnalysisTaskSE(name), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
   fHistTotalClusEM(0),fHistTotalClusTOF(0),fHistTotalClusALLTOF(0),fHistUnmatchedClusEM(0),fHistDeltaE(0),fHistUnmatchedClusTOF(0),
     fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),fHistUnmatchedEMEnergy(0),fHistUnmatchedTOF(0),
-  fHistUnmatchedTOFEnergy(0),fEvtNum(0),fHistNum(0),fHistTOFEMEnergyMatch(0)
+  fHistUnmatchedTOFEnergy(0),fEvtNum(0),fHistNum(0),fHistTOFEMEnergyMatch(0), fHistUnmatchedClusPair(0)
 
 {
   // Constructor
@@ -52,7 +52,7 @@ AliAnalysisTaskPJ::AliAnalysisTaskPJ()
   : AliAnalysisTaskSE(), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
     fHistTotalClusEM(0),fHistTotalClusTOF(0),fHistTotalClusALLTOF(0),fHistUnmatchedClusEM(0),fHistDeltaE(0),fHistUnmatchedClusTOF(0),
     fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),fHistUnmatchedEMEnergy(0),fHistUnmatchedTOF(0),
-    fHistUnmatchedTOFEnergy(0),fEvtNum(0),fHistNum(0),fHistTOFEMEnergyMatch(0)
+    fHistUnmatchedTOFEnergy(0),fEvtNum(0),fHistNum(0),fHistTOFEMEnergyMatch(0), fHistUnmatchedClusPair(0)
 
 {
   // Default Constructor
@@ -98,6 +98,11 @@ ent in TOF", 200, 0, 200);
   fHistUnmatchedClusEM = new TH1F("fHistUnmatchedClusEM", "Total # of Unmatched Clusters per Event in EMCAL", 50, 0,50);
   fHistUnmatchedClusEM->GetXaxis()->SetTitle("# of Unmatched Clusters per Event");
   fHistUnmatchedClusEM->GetYaxis()->SetTitle("Counts");
+
+  fHistUnmatchedClusPair = new TH1F("fHistUnmatchedClusPair", "Total # of Unmatched Clusters per Event With a Close TOF Neighbor", 50, 0,50);
+  fHistUnmatchedClusPair->GetXaxis()->SetTitle("# of Unmatched Clusters per Event");
+  fHistUnmatchedClusPair->GetYaxis()->SetTitle("Counts");
+
 
   fHistTOFEMEnergyMatch = new TH2F("fHistTOFEMEnergyMatch", "Delta R vs. Delta E for Unmatched Clusters", 100, 0, 1, 100, 0, 3);
   fHistTOFEMEnergyMatch->GetXaxis()->SetTitle("Delta E(MeV)");
@@ -168,6 +173,7 @@ ent in TOF", 200, 0, 200);
   fOutputList->Add(fHistTotalClusTOF);
   fOutputList->Add(fHistTotalClusALLTOF);
   fOutputList->Add(fHistUnmatchedClusEM);
+  fOutputList->Add(fHistUnmatchedClusPair);
   fOutputList->Add(fHistUnmatchedClusTOF);
   fOutputList->Add(fHistTOFEMEnergyMatch);
   fOutputList->Add(fHistUnmatchedEMEnergy);
@@ -375,6 +381,38 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
       fHistUnmatchedEMEnergy->Fill(EmCalEnergy);}
 
   }
+  Int_t ClosePair=0;
+  for(Int_t iToFTrack = 0; iToFTrack<tofClusters->GetEntriesFast(); iToFTrack++)
+    {
+      AliTOFcluster *cluster=(AliTOFcluster*)tofClusters->UncheckedAt(iToFTrack);
+      Float_t TOFx = cluster->GetR()*TMath::Cos(cluster->GetPhi());
+      Float_t TOFy = cluster->GetR()*TMath::Sin(cluster->GetPhi());
+      Float_t TOFz = cluster->GetZ();
+
+      TVector3 TOFvpos(TOFx,TOFy,TOFz);
+      Double_t TOFeta = TOFvpos.Eta();
+      if(unMatchedTOF[iToFTrack]==true)
+	{
+	  for(Int_t iToFTrack2 = iToFTrack+1; iToFTrack2<tofClusters->GetEntriesFast(); iToFTrack2++)
+	    {
+	      AliTOFcluster *cluster2=(AliTOFcluster*)tofClusters->UncheckedAt(iToFTrack2);
+	      Float_t TOFx2 = cluster2->GetR()*TMath::Cos(cluster2->GetPhi());
+	      Float_t TOFy2 = cluster2->GetR()*TMath::Sin(cluster2->GetPhi());
+	      Float_t TOFz2 = cluster2->GetZ();
+
+	      TVector3 TOFvpos2(TOFx2,TOFy2,TOFz2);
+	      Double_t TOFeta2 = TOFvpos2.Eta();
+	      
+	      Double_t DeltaRpair = sqrt(pow(TOFeta2-TOFeta,2)+pow(cluster2->GetPhi()-cluster->GetPhi(),2));
+	      if(unMatchedTOF[iToFTrack2]==true && DeltaRpair<0.01)
+		{
+		  ClosePair++;
+		}
+	    }
+	}
+    }
+  fHistUnmatchedClusPair->Fill(ClosePair);
+
 //This is all TOF e- Mass Assumotion Stuff
   for(Int_t icl=0; icl<nclus; icl++)
     {
@@ -468,8 +506,8 @@ void AliAnalysisTaskPJ::Terminate(Option_t *)
   TCanvas *c1 = new TCanvas("AliAnalysisTaskPJ","Pt",10,10,510,510);
   c1->cd();fHistTotalClusALLTOF->Draw();
  
-  //TCanvas *c2 = new TCanvas("histo","TOF",10,10,510,510);
-  //c2->cd(); fHistTOF->Draw();
+  TCanvas *c8 = new TCanvas("histo","TOF",10,10,510,510);
+  c8->cd(); fHistUnmatchedClusPair->Draw();
   
   TCanvas *c3 = new TCanvas("histototalclusem", "Total # of Clusters per Event in Emcal", 10,10,510,510);
   c3->cd(); fHistTotalClusEM->Draw();
