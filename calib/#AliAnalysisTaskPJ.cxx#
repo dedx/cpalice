@@ -501,16 +501,17 @@ Double_t AliAnalysisTaskPJ::CalcMass(Double_t MassHyp, Double_t time, Double_t e
   fHistVel->Fill(veloc);
   if (time>15491){
     Double_t c = 0.000299792458;
-    Double_t dist = (3.70/(TMath::Sin(2*TMath::ATan(TMath::Exp(-eta)))));
-    Double_t veloc = (dist/time)/c;
-    fHistVelT->Fill(veloc);
+    Double_t dist1 = (3.70/(TMath::Sin(2*TMath::ATan(TMath::Exp(-eta)))));
+    Double_t veloc1 = (dist1/time)/c;
+    fHistVelT->Fill(veloc1);
   }
   if (time>15491){
     Double_t c = 0.000299792458;
-    Double_t dist = (3.70/(TMath::Sin(2*TMath::ATan(TMath::Exp(-eta)))));
-    if(abs(dist)<4.644){
-      Double_t veloc = (dist/time)/c;
-      fHistVelD->Fill(veloc);}}
+    Double_t dist2 = (3.70/(TMath::Sin(2*TMath::ATan(TMath::Exp(-eta)))));
+    if(abs(dist2)<4.644){
+      Double_t veloc2 = (dist2/time)/c;
+      cout<<"Filling Distance";
+      fHistVelD->Fill(veloc2);}}
   PostData(1, fOutputList);}
   if (time>15491){
     Double_t c = 0.000299792458;
