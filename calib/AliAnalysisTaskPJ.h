@@ -37,6 +37,9 @@ class AliAnalysisTaskPJ : public AliAnalysisTaskSE {
   TH1F        *fHistVelT;
   TH1F        *fHistVelD;
   TH2F        *fHistEMClusDist;
+  TH2F        *fHistEMClusMatchedDist;
+  TH1F        *fHistUnMatchedClusNum;
+  TH1F        *fHistMatchedClusNum;
   TH2F        *fHistTOFEMEnergyMatch;
   TH1F        *fHistTotalClusTOF;
   TH1F        *fHistTotalClusALLTOF;

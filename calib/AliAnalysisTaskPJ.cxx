@@ -29,7 +29,7 @@ AliAnalysisTaskPJ::AliAnalysisTaskPJ(const char *name)
 : AliAnalysisTaskSE(name), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
   fHistTotalClusEM(0),fHistTotalClusTOF(0),fHistTotalClusALLTOF(0),fHistUnmatchedClusEM(0),fHistDeltaE(0),fHistUnmatchedClusTOF(0),
     fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),fHistUnmatchedEMEnergy(0),fHistUnmatchedTOF(0),
-  fHistUnmatchedTOFEnergy(0),fEvtNum(0),fHistNum(0),fHistTOFEMEnergyMatch(0), fHistUnmatchedClusPair(0), fHistVel(0), fHistEMClusDist(0), fHistVelT(0), fHistVelD(0)
+  fHistUnmatchedTOFEnergy(0),fEvtNum(0),fHistNum(0),fHistTOFEMEnergyMatch(0), fHistUnmatchedClusPair(0), fHistVel(0), fHistEMClusDist(0), fHistVelT(0), fHistVelD(0), fHistEMClusMatchedDist(0),fHistMatchedClusNum(0),fHistUnMatchedClusNum(0)
 
 
 {
@@ -53,7 +53,7 @@ AliAnalysisTaskPJ::AliAnalysisTaskPJ()
   : AliAnalysisTaskSE(), fESD(0), fOutputList(0), fHistPt(0), fHistTOF(0),fHistNumTOFTOT(0),fHistNumTOFTDC(0),
     fHistTotalClusEM(0),fHistTotalClusTOF(0),fHistTotalClusALLTOF(0),fHistUnmatchedClusEM(0),fHistDeltaE(0),fHistUnmatchedClusTOF(0),
     fHistDeltaADC(0),fHistNumCC(0),fHistNumTC(0),fHistUnmatchedEMEnergy(0),fHistUnmatchedTOF(0),
-    fHistUnmatchedTOFEnergy(0),fEvtNum(0),fHistNum(0),fHistTOFEMEnergyMatch(0), fHistUnmatchedClusPair(0), fHistVel(0), fHistEMClusDist(0), fHistVelT(0), fHistVelD(0)
+    fHistUnmatchedTOFEnergy(0),fEvtNum(0),fHistNum(0),fHistTOFEMEnergyMatch(0), fHistUnmatchedClusPair(0), fHistVel(0), fHistEMClusDist(0), fHistVelT(0), fHistVelD(0), fHistEMClusMatchedDist(0), fHistMatchedClusNum(0),fHistUnMatchedClusNum(0)
 
 
 {
@@ -114,7 +114,7 @@ ent in TOF", 200, 0, 200);
   fHistUnmatchedClusTOF->GetXaxis()->SetTitle("# of Unmatched Clusters per Event");
   fHistUnmatchedClusTOF->GetYaxis()->SetTitle("Counts");
 
-  fHistUnmatchedTOFEnergy = new TH1F("fHistUnmatchedTOFEnergy", "TOF Calculated Energy Distribution for Unmatched Clusters with an $e^-$ Mass Assumption", 1000, 0, .001);
+  fHistUnmatchedTOFEnergy = new TH1F("fHistUnmatchedTOFEnergy", "TOF Calculated Energy Distribution for Unmatched Clusters with an $e^-$ Mass Assumption", 1000, .0005, 50);
   fHistUnmatchedTOFEnergy->GetXaxis()->SetTitle("Calculated Energy(GeV)");
   fHistUnmatchedTOFEnergy->GetYaxis()->SetTitle("Counts");
 
@@ -122,7 +122,7 @@ ent in TOF", 200, 0, 200);
   fHistDeltaE->GetXaxis()->SetTitle("Eta");
   fHistDeltaE->GetYaxis()->SetTitle("Phi");
 
-  fHistUnmatchedEMEnergy = new TH1F("fHistUnmatchedEMEnergy", "Unmatched EMCAL Cluster Energy Distribution", 1000, 0, .001);
+  fHistUnmatchedEMEnergy = new TH1F("fHistUnmatchedEMEnergy", "Unmatched EMCAL Cluster Energy Distribution", 1000, .0005, 50);
   fHistUnmatchedEMEnergy->GetXaxis()->SetTitle("Energy(GeV)");
   fHistUnmatchedEMEnergy->GetYaxis()->SetTitle("Counts");
 
@@ -146,10 +146,23 @@ ent in TOF", 200, 0, 200);
   fHistVelD->GetXaxis()->SetTitle("Velocity (in units of c)");
   fHistVelD->GetYaxis()->SetTitle("Counts");
 
+  fHistEMClusMatchedDist = new TH2F("fHistEMClusMatchedDist", "The Eta Phi Distribution of Matched EMCal Clusters", 50,  -.7, .7, 50, 80*TMath::Pi()/180, TMath::Pi());
+  fHistEMClusMatchedDist->GetXaxis()->SetTitle("Eta");
+  fHistEMClusMatchedDist->GetYaxis()->SetTitle("Phi");
+
 
   fHistEMClusDist = new TH2F("fHistEMClusDist", "THe Eta Phi Distribution of Unmatched EMCal Clusters", 50, -.7, .7, 50, 80*TMath::Pi()/180, TMath::Pi());
   fHistEMClusDist->GetXaxis()->SetTitle("Eta");
   fHistEMClusDist->GetYaxis()->SetTitle("Phi");
+
+  fHistMatchedClusNum = new TH1F("fHistMatchedClusNum", "The Number of Towers per Cluster in Matched Clusters", 10, 0, 10);
+  fHistMatchedClusNum->GetXaxis()->SetTitle("# of Towers per Cluster");
+  fHistMatchedClusNum->GetYaxis()->SetTitle("Counts");
+
+  fHistUnMatchedClusNum = new TH1F("fHistMatchedClusNum", "The Number of Towers per Cluster in Unmatched Clusters", 10, 0, 10);
+  fHistUnMatchedClusNum->GetXaxis()->SetTitle("# of Towers per Cluster");
+  fHistUnMatchedClusNum->GetYaxis()->SetTitle("Counts");
+
 
   for (int i = 0; i < 100; i++) {
     char name[100];sprintf(name,"fHistEtaPhiCC%d",i);
@@ -201,6 +214,9 @@ ent in TOF", 200, 0, 200);
   fOutputList->Add(fHistVelT);
   fOutputList->Add(fHistVelD);
   fOutputList->Add(fHistEMClusDist);
+  fOutputList->Add(fHistEMClusMatchedDist);
+  fOutputList->Add(fHistUnMatchedClusNum);
+  fOutputList->Add(fHistMatchedClusNum);
   PostData(1,fOutputList); // important for merging
 }
 
@@ -325,7 +341,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
     
     // Time of Flight (TOF)
     Double_t EmCaltof = clus->GetTOF();
-    Double_t EmCalEnergy = clus->E()*1E-3;
+    Double_t EmCalEnergy = clus->E();
     //fHistTOF->Fill(EmCaltof);
     //Print basic cluster information
     cout << "Cluster: " << icl+1 << "/" << nclus << "Phi: " << 
@@ -379,6 +395,10 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 	  }
 	  matchedTOF[iToFTrack] = true;
         matchedEmCal = true;
+	fHistMatchedClusNum->Fill(clus->GetNCells());
+	if(clus->GetNCells()<4){
+	fHistEMClusMatchedDist->Fill(ceta, cphi);
+	}
 	Rthresh = DeltaR;
 	lastMatched = iToFTrack;
 	  }
@@ -402,6 +422,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
       cout<<"HEY LISTEN"<<UnmatchedEM<<"\n";
       unMatchedEmCal[icl]=true;
       fHistEMClusDist->Fill(ceta, cphi);
+      fHistUnMatchedClusNum->Fill(clus->GetNCells());
       fHistUnmatchedEMEnergy->Fill(EmCalEnergy);}
 
   }
@@ -433,7 +454,7 @@ void AliAnalysisTaskPJ::UserExec(Option_t *)
 				())*1E-3; // in ns
 	      Double_t DeltaRpair = sqrt(pow(TOFeta2-TOFeta,2)+pow(cluster2->GetPhi()-cluster->GetPhi(),2));
 	      Double_t DeltaT = abs(time2-time);
-	      if(unMatchedTOF[iToFTrack2]==true && DeltaRpair<0.01 && DeltaT<10)
+	      if(unMatchedTOF[iToFTrack2]==true && DeltaRpair<0.001 && DeltaT<10)
 		{
 		  ClosePair++;
 		}
@@ -515,14 +536,13 @@ Double_t AliAnalysisTaskPJ::CalcMass(Double_t MassHyp, Double_t time, Double_t e
   if (time>15491){
     Double_t c = 0.000299792458;
     Double_t dist = (3.70/(TMath::Sin(2*TMath::ATan(TMath::Exp(-eta)))));
-    if(abs(dist)<4.644){
     Double_t veloc = (dist/time)/c;
     if(abs(veloc)<1){
     cout<<"Velocity: "<<veloc<<"Distance: "<<dist;
       Double_t energycalc = sqrt(pow(MassHyp*1E-3,2)+pow((MassHyp*1E-3*veloc/sqrt(1-pow((veloc),2))),2));
       
     return energycalc;
-    }}}
+    }}
   cout<<"The velocity is too high or time is zero";
   return -999;
 }
