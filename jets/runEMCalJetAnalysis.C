@@ -159,6 +159,7 @@ void runEMCalJetAnalysis(
   TString tracksName = "tracks";
   TString clustersName = "EmcCaloClusters";
   TString clustersCorrName = "CaloClustersCorr";
+  TString cellsName     = "EMCALCells",
   TString rhoName = "";
 
   // ################# Now: Call jet preparation macro (picotracks, hadronic corrected caloclusters, ...) 
@@ -185,10 +186,15 @@ void runEMCalJetAnalysis(
   // Here you can put in your AddTaskMacro for your task
   gSystem->AddIncludePath("-I$ALICE_ROOT/include" );
   gSystem->AddIncludePath("-I$ALICE_PHYSICS/include" );
-  gROOT->ProcessLine(".L AliAnalysisTaskEmcalJetSampleTEST.cxx+g");
-  gROOT->LoadMacro("$ALICE_PHYSICS/PWGJE/EMCALJetTasks/macros/AddTaskEmcalJetSample.C");
-  AliAnalysisTaskEmcalJetSample* anaTask = 0;
-  AddTaskEmcalJetSample(tracksName, clustersCorrName, jetFinderTask->GetName(), rhoName, 4);
+  gROOT->ProcessLine(".L AliAnalysisTaskSAJF.cxx+g");
+  gROOT->LoadMacro("AddTaskSAJF.C");
+  AliAnalysisTaskSAJF* anaTask = AddTaskSAJF(tracksName, clustersCorrName, jetFinderTask->GetName(), rhoName,0.2,1,0.557,"TPC",0,"AliAnalysisTaskSAJF");
+
+
+  //JLK QA TASK
+  gROOT->ProcessLine(".L AliAnalysisTaskSAQA.cxx+g");
+  gROOT->LoadMacro("AddTaskSAQA.C");
+  AliAnalysisTaskSAQA* qaTask = AddTaskSAQA(tracksName, clustersCorrName, cellsName, jetFinderTask->GetName(), rhoName,0.2,1,0.557,0.15,0.30,"TPC","AliAnalysisTaskSAQA");
 
   // Set the physics selection for all given tasks
   TObjArray *toptasks = mgr->GetTasks();
