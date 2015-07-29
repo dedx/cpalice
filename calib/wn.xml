@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<alien>
+  <collection name="collection">
+    <event name="1">
+      <file name="AliESDs.root" aclId="" broken="0" ctime="2014-02-14 10:26:52" dir="62781075" entryId="62781506" expiretime="" gowner="alidaq" guid="7EA6193A-8100-11E1-9717-1FAB8E80BEEF" guidtime="" jobid="" lfn="/alice/data/2011/LHC11c/000154808/ESDs/spc_calo/0001/AliESDs.root" md5="1c1e5ef424621d17e697a295dc0c1d3f" owner="alidaq" perm="755" replicated="0" size="318070202" turl="alien:///alice/data/2011/LHC11c/000154808/ESDs/spc_calo/0001/AliESDs.root" type="f" />
+    </event>
+    <info command="[/alice/cern.ch/user/p/psteffan/]: find -z -x collection -l 1 -o 0 /alice/data/2011/LHC11c/000154808 *ESDs/spc_calo/" creator="admin" date="Thu Jul 23 17:27:33 CEST 2015" timestamp="1437665253" />
+  </collection>
+</alien>
+
