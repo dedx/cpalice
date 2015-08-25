@@ -1,29 +1,59 @@
 AliAnalysisTask* run1()
 {
-  // If running at root prompt, manually load these libraries
-  /*
-  gSystem->Load("libTree.so");
-  gSystem->Load("libGeom.so");
-  gSystem->Load("libVMC.so");
-  gSystem->Load("libPhysics.so");
-  gSystem->Load("libMinuit.so");
-  gSystem->Load("libSTEERBase.so");
-  gSystem->Load("libESD.so");
-  gSystem->Load("libAOD.so"); 
-  gSystem->Load("libTOFrec.so");
-  // load analysis framework
+  gSystem->Load("libTree");
+  gSystem->Load("libVMC");
+  gSystem->Load("libGeom");
+  gSystem->Load("libGui");
+  gSystem->Load("libXMLParser");
+  gSystem->Load("libMinuit");
+  gSystem->Load("libMinuit2");
+  gSystem->Load("libProof");
+  gSystem->Load("libPhysics");
+  gSystem->Load("libSTEERBase");
+  gSystem->Load("libESD");
+  gSystem->Load("libAOD");
+  gSystem->Load("libOADB");
   gSystem->Load("libANALYSIS");
-  */
-  // if running in aliroot, load only this library
-  //  gSystem->Load("libANALYSISalice");
-
-  //  gROOT->LoadMacro("$ROOTSYS/macros/CreateESDChain.C");
-//  gROOT->LoadMacro("$ALICE_ROOT/PWG0/CreateESDChain.C");
-//  TChain* chain = CreateChain("esdTree","run_149881NoB.txt",
-
-  // for includes use either global setting in $HOME/.rootrc
-  // ACLiC.IncludePaths: -I$(ALICE_ROOT)/include
-  // or in each macro
+  gSystem->Load("libCDB");
+  gSystem->Load("libRAWDatabase");
+  gSystem->Load("libSTEER");
+  gSystem->Load("libEVGEN");
+  gSystem->Load("libANALYSISalice");
+  gSystem->Load("libCORRFW");
+  gSystem->Load("libTOFbase");
+  gSystem->Load("libTOFrec");
+  gSystem->Load("libRAWDatabase");
+  gSystem->Load("libRAWDatarec");
+  gSystem->Load("libTPCbase");
+  gSystem->Load("libTPCrec");
+  gSystem->Load("libITSbase");
+  gSystem->Load("libITSrec");
+  gSystem->Load("libTRDbase");
+  gSystem->Load("libTender");
+  gSystem->Load("libSTAT");
+  gSystem->Load("libTRDrec");
+  gSystem->Load("libHMPIDbase");
+  gSystem->Load("libPWGPP");
+  gSystem->Load("libPWGHFbase");
+  gSystem->Load("libPWGDQdielectron");
+  gSystem->Load("libPWGHFhfe");
+  gSystem->Load("libEMCALUtils");
+  gSystem->Load("libPHOSUtils");
+  gSystem->Load("libPWGCaloTrackCorrBase");
+  gSystem->Load("libEMCALraw");
+  gSystem->Load("libEMCALbase");
+  gSystem->Load("libEMCALrec");
+  gSystem->Load("libTRDbase");
+  gSystem->Load("libVZERObase");
+  gSystem->Load("libVZEROrec");
+  gSystem->Load("libTender");
+  gSystem->Load("libTenderSupplies");
+  gSystem->Load("libPWGTools");
+  gSystem->Load("libPWGEMCAL");
+  gSystem->Load("libESDfilter");
+  gSystem->Load("libPWGGAEMCALTasks");
+  gSystem->Load("libPWGCFCorrelationsBase");
+  gSystem->Load("libPWGCFCorrelationsDPhi");
   gSystem->AddIncludePath("-Wno-deprecated");
   gSystem->AddIncludePath("-I$ALICE_ROOT/include");
   gSystem->AddIncludePath("-I$ALICE_PHYSICS/include");
@@ -39,41 +69,36 @@ AliAnalysisTask* run1()
   
   // Register input handler to manager
   mgr->SetInputEventHandler(rphandler);
-
-  // Create task
-  //gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/AddTaskEmcalPhysicsSelection.C");
-  //AliPhysicsSelectionTask *physSelTask = AddTaskEmcalPhysicsSelection(kTRUE, kFALSE, AliVEvent::kAny, 5, 5, 10, kTRUE, -1, -1, -1,-1);
-
-
-  //gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskCentrality.C");
-  //AliCentralitySelectionTask *centralityTask = AddTaskCentrality(kTRUE);
-
-  gROOT->LoadMacro("AliAnalysisTaskPJ.cxx++g");
-  AliAnalysisTask *taskpj = new AliAnalysisTaskPJ("OurTask");
-  //gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/AddTaskEmcalSetup.C");
-  //gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/AddTaskEmcalPreparation.C");
-  gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/AddTaskMatchingChain.C");
-
-  //AliEmcalSetupTask *setupTask = AddTaskEmcalSetup();
-  //setupTask->SetGeoPath("$ALICE_PHYSICS/OADB/EMCAL");
-  //AliAnalysisTaskSE *clusm = AddTaskEmcalPreparation("LHC11h","run_149881NoB.txt");
-  AddTaskMatchingChain("LHC11h", AliVEvent::kAny,"EmcCaloClusters",1.,kTRUE,0.1,kFALSE,kFALSE);
-  gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskCentrality.C");
-  AliCentralitySelectionTask *centralityTask = AddTaskCentrality(kTRUE);
-
-
+  gROOT->LoadMacro("./CreateESDChain.C");
+  //  gROOT->LoadMacro("$ALICE_ROOT/PWG0/CreateESDChain.C");
+  TChain* chain = CreateChain("esdTree", "run_154763spc_calo.txt", 1000000);
+  TChain* pass1tree = CreateChain("esdTree", "run_154763pass1.txt", 1000000);
+  gROOT->LoadMacro("AliAnalysisTaskPJ_B.cxx++g");
+  AliAnalysisTask *taskpj = new AliAnalysisTaskPJ_B("OurTask", pass1tree);
+   /* 
+  gROOT->LoadMacro("./AddTaskEmcalSetup.C");
+  AliEmcalSetupTask *setupTask = AddTaskEmcalSetup();
+  setupTask->SetGeoPath("$ALICE_PHYSICS/OADB/EMCAL");
+  setupTask->SetOcdbPath("");  
+    
+  //gROOT->LoadMacro("./AddTaskEMCALTenderUsingDatasetDef.C");
+  //AliAnalysisTaskSE *emcTender = AddTaskEMCALTenderUsingDatasetDef("LHC12b");
   
+  gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/AddTaskEmcalPreparation.C");
+  AliAnalysisTaskSE *clusm = AddTaskEmcalPreparation();
+
+  gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/AddTaskMatchingChain.C");
+  AddTaskMatchingChain("LHC11b",AliVEvent::kAny,"EmcCaloClusters",1.,kTRUE,0.1,kTRUE,kTRUE);
+*/
   // Add task(s)
   mgr->AddTask(taskpj);
 
-  gROOT->LoadMacro("./CreateESDChain.C");
-  //  gROOT->LoadMacro("$ALICE_ROOT/PWG0/CreateESDChain.C");
-  TChain* chain = CreateChain("esdTree","run_149881NoB.txt", 10000);
+  
 
   // Create containers for input/output
   AliAnalysisDataContainer *cinput = mgr->GetCommonInputContainer();
-  AliAnalysisDataContainer *coutputpj = mgr->CreateContainer("chistPJ", TList::Class(),   
-      AliAnalysisManager::kOutputContainer, "PJ.Calib.root");
+  AliAnalysisDataContainer *coutputpj = mgr->CreateContainer("PJ_Bhist", TList::Class(),   
+      AliAnalysisManager::kOutputContainer, "PJB.Calib.root");
 
   // Connect input/output
   mgr->ConnectInput(taskpj, 0, cinput);
@@ -89,5 +114,5 @@ AliAnalysisTask* run1()
 
   if (!mgr->InitAnalysis()) return;
   mgr->PrintStatus();
-  mgr->StartAnalysis("local", chain, 100000);
+  mgr->StartAnalysis("local", chain, 10);
 }
