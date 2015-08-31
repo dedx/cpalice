@@ -60,9 +60,8 @@ AliAnalysisTask* run1()
 
   // Create the analysis manager
   AliAnalysisManager *mgr = new AliAnalysisManager("testAnalysis");
-  
-
-
+    
+  TGeoGlobalMagField::Instance()->SetField(new AliMagF("Maps","Maps", 1., 1., AliMagF::k5kG));
 
   // Add ESD input handler
   AliVEventHandler* rphandler = new AliESDInputHandlerRP();
@@ -114,5 +113,5 @@ AliAnalysisTask* run1()
 
   if (!mgr->InitAnalysis()) return;
   mgr->PrintStatus();
-  mgr->StartAnalysis("local", chain, 10);
+  mgr->StartAnalysis("local", chain, 1000);
 }

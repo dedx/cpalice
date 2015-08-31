@@ -17,6 +17,9 @@
 #include "AliTOFcluster.h"
 #include "AliCluster.h"
 #include "AliTOFGeometry.h"
+#include "AliTrackerBase.h"
+#include "AliCDBManager.h"
+#include "AliGeomManager.h"
 
 #include "AliAnalysisTaskPJ_B.h"
 
@@ -65,12 +68,12 @@ void AliAnalysisTaskPJ_B::UserCreateOutputObjects()
   fOutputList = new TList();
   fOutputList->SetOwner(); // otherwise it produces leaks in merging
   
-  fHistPt = new TH1F("fHistPt", "EMCAL Cluster-Matching distribution", 20, 0, 1);
+  fHistPt = new TH1F("fHistPt", "EMCAL Cluster-Matching distribution", 20, 0, 2);
   fHistPt->GetXaxis()->SetTitle("Percentage of Clusters Matched per Event");
   fHistPt->GetYaxis()->SetTitle("Counts");
   fHistPt->SetMarkerStyle(kFullCircle);
   
-  fHistTC = new TH1F("fHistTC", "TOF Cluster-Matching distribution", 200, 0, 100);
+  fHistTC = new TH1F("fHistTC", "TOF Cluster-Matching distribution", 10000, -500, 500);
   fHistTC->GetXaxis()->SetTitle("Percentage of Clusters Matched per Event");
   fHistTC->GetYaxis()->SetTitle("Counts");
   fHistTC->SetMarkerStyle(kFullCircle);
@@ -108,6 +111,11 @@ void AliAnalysisTaskPJ_B::UserExec(Option_t *)
   Double_t vertex_position[3];
   esd->GetVertex()->GetXYZ(vertex_position);
     
+  AliCDBManager *cdbManager = AliCDBManager::Instance();
+  cdbManager->SetDefaultStorage("alien://folder=/alice/data/2011/OCDB");
+  cdbManager->SetRun(esd->GetRunNumber());  
+  AliGeomManager::LoadGeometry();
+    
   /*TTree* tree = (TTree*)pass1tree->Get("esdTree");
     
   AliESDEvent *RecoESD = new AliESDEvent();
@@ -134,26 +142,28 @@ void AliAnalysisTaskPJ_B::UserExec(Option_t *)
   printf("<INFO>NTOFclusters=%d\n",nClusters);
   cout<<"TOF Clusters: " <<nClusters<<endl;
   
-  pass1tree->SetMakeClass(1);
+  AliESDEvent *RecoESD = new AliESDEvent();
+  RecoESD->ReadFromTree((TTree*)pass1tree);
+
+  /*pass1tree->SetMakeClass(1);
   pass1tree->SetBranchStatus("*", 0);
   pass1tree->SetBranchStatus("AliESDHeader.fTimeStamp", 1);
-  pass1tree->SetBranchStatus("Tracks",1);
+  pass1tree->SetBranchStatus("Tracks*",1);
     
   if(!pass1tree){cout<<"No Chain";}
-  Int_t mEv = -999;
+  
   UInt_t recoESD = 0;
   pass1tree->SetBranchAddress("AliESDHeader.fTimeStamp",&recoESD);
-    
-    
+
   //TClonesArray tdummy("AliESDtrack");
   TClonesArray* recoTrack = new TClonesArray("AliESDtrack");
-  pass1tree->SetBranchAddress("Tracks", recoTrack);
+  pass1tree->SetBranchAddress("Tracks", recoTrack);*/
   Bool_t foundOne=kFALSE;
-    
+  Int_t mEv = -999;
   Int_t numev = pass1tree->GetEntries();
     for(Int_t iev=0;iev<numev;iev++){
         pass1tree->GetEntry(iev);
-        if(recoESD==esd->GetTimeStamp()){
+        if(RecoESD->GetTimeStamp()==esd->GetTimeStamp()){
             printf("Found one @ %d", iev);
             fHistPt->Fill(1);
             foundOne=kTRUE;
@@ -164,12 +174,26 @@ void AliAnalysisTaskPJ_B::UserExec(Option_t *)
     
     
     if(foundOne){
-    recoTrack->Clear("C");
     pass1tree->GetEntry(mEv);
-    cout<<recoTrack->GetEntries();
-    for(Int_t icl = 0; icl<recoTrack->GetEntries();icl++){
-        AliESDtrack* trk = (AliESDtrack*)recoTrack->At(icl);
-        fHistTC->Fill(trk->GetOuterParam()->GetZ());
+    cout<<RecoESD->GetNumberOfTracks();
+    for(Int_t icl = 0; icl<RecoESD->GetNumberOfTracks();icl++){
+        AliESDtrack* trk = (AliESDtrack*)RecoESD->GetTrack(icl);
+        cout<<icl;
+        if(!trk){break;}
+        AliExternalTrackParam* trkpar = (AliExternalTrackParam*)trk->GetOuterParam();
+        if(!trkpar){break;}
+        if(!AliTrackerBase::PropagateTrackTo(trkpar, 370, trk->M(), 1, kTRUE, -1, trkpar->GetSign(), kFALSE, kTRUE)){break;}
+        //if(!trkpar->PropagateTo(370, RecoESD->GetMagneticField())){break;}
+        Double_t trkVec[3];
+        Float_t tofVec[3];
+        trkpar->GetXYZ(trkVec);
+        
+        for(Int_t itof = 0; itof<tofClusters->GetEntriesFast(); itof++){
+            AliCluster* tofClus = (AliCluster*)tofClusters->At(itof);
+            tofClus->GetGlobalXYZ(tofVec);
+            //if(sqrt(pow(trkVec[0]-tofVec[0],2)+pow(trkVec[1]-tofVec[1],2)+pow(trkVec[2]-tofVec[2],2))<10){
+            fHistTC->Fill(trkVec[0]-tofVec[0]);
+    }
     }
     }
     
