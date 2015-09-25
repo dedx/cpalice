@@ -17,6 +17,8 @@ class AliAnalysisTaskPJ_B : public AliAnalysisTaskSE {
   virtual ~AliAnalysisTaskPJ_B() {}
   
   virtual void   UserCreateOutputObjects();
+  virtual void   MatchTracks(TClonesArray* ESDtrk, TClonesArray* ESDclus);
+  virtual Int_t  FindClusterIndex(Double_t z, TClonesArray* ESDclus) const;
   virtual void   UserExec(Option_t *option);
   virtual void   Terminate(Option_t *);
   
@@ -26,6 +28,7 @@ class AliAnalysisTaskPJ_B : public AliAnalysisTaskSE {
   TH1F        *fHistPt; //! Track Pt spectrum
   TH1F        *fHistTC; //!
   TH1F        *fHistTOFMatch; //!
+  Int_t       *fWrittenInPos;
   TChain      *pass1tree;
   AliAnalysisTaskPJ_B(const AliAnalysisTaskPJ_B&); // not implemented
   AliAnalysisTaskPJ_B& operator=(const AliAnalysisTaskPJ_B&); // not implemented
