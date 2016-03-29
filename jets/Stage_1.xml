@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<alien>
+  <collection name="Stage_1">
+    <event name="1">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:19:26" dir="60620532" entryId="60620534" expiretime="" gowner="psteffan" guid="90A58D3A-F511-11E5-87C6-F3D7F3C712DC" guidtime="11E5F511" jobid="641166533" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/001/root_archive.zip" md5="8d2882add3831880879cdd8b36e7da0f" owner="psteffan" perm="755" replicated="0" size="8317" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/001/root_archive.zip" type="f" />
+    </event>
+    <event name="10">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:20:47" dir="60620557" entryId="60620563" expiretime="" gowner="psteffan" guid="C0D340EC-F511-11E5-BA79-6B7BD7976C71" guidtime="11E5F511" jobid="641166542" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/010/root_archive.zip" md5="aa6c0e0b2344dd712c8abbc8c42b2cd7" owner="psteffan" perm="755" replicated="0" size="8238" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/010/root_archive.zip" type="f" />
+    </event>
+    <event name="11">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:19:40" dir="60620533" entryId="60620540" expiretime="" gowner="psteffan" guid="97D195CC-F511-11E5-933D-9399A1EB1D60" guidtime="11E5F511" jobid="641166543" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/011/root_archive.zip" md5="a7819046be39907f986a03ea7d149d32" owner="psteffan" perm="755" replicated="0" size="8309" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/011/root_archive.zip" type="f" />
+    </event>
+    <event name="12">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:20:38" dir="60620549" entryId="60620561" expiretime="" gowner="psteffan" guid="BDD57C48-F511-11E5-A7ED-6B1A92F9E295" guidtime="11E5F511" jobid="641166544" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/012/root_archive.zip" md5="fd054e19cea0ad45ee5f9733ebbafa81" owner="psteffan" perm="755" replicated="0" size="8309" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/012/root_archive.zip" type="f" />
+    </event>
+    <event name="13">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:19:47" dir="60620538" entryId="60620542" expiretime="" gowner="psteffan" guid="9D2410B8-F511-11E5-9AD7-E7A24175DDF4" guidtime="11E5F511" jobid="641166545" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/013/root_archive.zip" md5="605b8ceb0a4111231da2d4fce7dcbe26" owner="psteffan" perm="755" replicated="0" size="8364" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/013/root_archive.zip" type="f" />
+    </event>
+    <event name="14">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:19:47" dir="60620539" entryId="60620544" expiretime="" gowner="psteffan" guid="9F8A1EE2-F511-11E5-A7E6-A724A91118C1" guidtime="11E5F511" jobid="641166546" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/014/root_archive.zip" md5="3b007eab15a5e83c02f8543b1e97e16b" owner="psteffan" perm="755" replicated="0" size="8339" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/014/root_archive.zip" type="f" />
+    </event>
+    <event name="15">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:24:07" dir="60620574" entryId="60620576" expiretime="" gowner="psteffan" guid="38EDCD9A-F512-11E5-8E3F-FBD1108D38FF" guidtime="11E5F512" jobid="641166547" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/015/root_archive.zip" md5="d1c8e0ee32beebce73b6b883a6ee0d7d" owner="psteffan" perm="755" replicated="0" size="8334" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/015/root_archive.zip" type="f" />
+    </event>
+    <event name="16">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:23:29" dir="60620571" entryId="60620572" expiretime="" gowner="psteffan" guid="2196697C-F512-11E5-8755-8FF00779AEE9" guidtime="11E5F512" jobid="641166548" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/016/root_archive.zip" md5="fcd63b6591173b32e2d83d56d3828c13" owner="psteffan" perm="755" replicated="0" size="8183" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/016/root_archive.zip" type="f" />
+    </event>
+    <event name="17">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:20:47" dir="60620558" entryId="60620565" expiretime="" gowner="psteffan" guid="C3E853EE-F511-11E5-A3BB-531BA179717E" guidtime="11E5F511" jobid="641166549" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/017/root_archive.zip" md5="ff82fec5ef66f9f79099f2392a1b0a85" owner="psteffan" perm="755" replicated="0" size="8354" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/017/root_archive.zip" type="f" />
+    </event>
+    <event name="18">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:24:19" dir="60620575" entryId="60620579" expiretime="" gowner="psteffan" guid="3C47DFA8-F512-11E5-B394-6359481E8E72" guidtime="11E5F512" jobid="641166550" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/018/root_archive.zip" md5="1916a074f8f4cae00eb3d4e970404e75" owner="psteffan" perm="755" replicated="0" size="8275" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/018/root_archive.zip" type="f" />
+    </event>
+    <event name="19">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:35:02" dir="60620587" entryId="60620588" expiretime="" gowner="psteffan" guid="BEA399FA-F513-11E5-950B-9BA1F07A7651" guidtime="11E5F513" jobid="641166551" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/019/root_archive.zip" md5="857af31809701008dd7be93acbc1bb15" owner="psteffan" perm="755" replicated="0" size="8253" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/019/root_archive.zip" type="f" />
+    </event>
+    <event name="2">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:28:30" dir="60620584" entryId="60620585" expiretime="" gowner="psteffan" guid="D5C20EB0-F512-11E5-BF13-835ACFC7FAB3" guidtime="11E5F512" jobid="641166534" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/002/root_archive.zip" md5="b7ae6b623eaca768bf531d3bdd2c6dec" owner="psteffan" perm="755" replicated="0" size="8249" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/002/root_archive.zip" type="f" />
+    </event>
+    <event name="20">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:17:26" dir="60620526" entryId="60620529" expiretime="" gowner="psteffan" guid="49A8B2C2-F511-11E5-8387-B38240BE6DFD" guidtime="11E5F511" jobid="641166552" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/020/root_archive.zip" md5="8447c8b9441768693b7f942e13248bcd" owner="psteffan" perm="755" replicated="0" size="7347" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/020/root_archive.zip" type="f" />
+    </event>
+    <event name="21">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:17:16" dir="60620525" entryId="60620527" expiretime="" gowner="psteffan" guid="486FB41E-F511-11E5-81E1-37A36D8D274F" guidtime="11E5F511" jobid="641166553" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/021/root_archive.zip" md5="c4ec1af6b0d47e2a802619ab40840ef0" owner="psteffan" perm="755" replicated="0" size="7160" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/021/root_archive.zip" type="f" />
+    </event>
+    <event name="3">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:20:28" dir="60620546" entryId="60620551" expiretime="" gowner="psteffan" guid="B3D41D44-F511-11E5-84F4-ABE3306E4781" guidtime="11E5F511" jobid="641166535" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/003/root_archive.zip" md5="9fae0180ff49256c407d3f9179f32277" owner="psteffan" perm="755" replicated="0" size="8312" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/003/root_archive.zip" type="f" />
+    </event>
+    <event name="4">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:19:27" dir="60620531" entryId="60620536" expiretime="" gowner="psteffan" guid="90A6850A-F511-11E5-95D5-7F6ACEF53E03" guidtime="11E5F511" jobid="641166536" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/004/root_archive.zip" md5="5939ae730a38b43dbd7f48ebd62ee3b7" owner="psteffan" perm="755" replicated="0" size="8357" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/004/root_archive.zip" type="f" />
+    </event>
+    <event name="5">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:20:28" dir="60620547" entryId="60620553" expiretime="" gowner="psteffan" guid="B76B233A-F511-11E5-9D36-43E1B4E26112" guidtime="11E5F511" jobid="641166537" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/005/root_archive.zip" md5="fc563671fe676b198fc75843ad606bfd" owner="psteffan" perm="755" replicated="0" size="8206" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/005/root_archive.zip" type="f" />
+    </event>
+    <event name="6">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:20:38" dir="60620550" entryId="60620559" expiretime="" gowner="psteffan" guid="BF019084-F511-11E5-B7D4-63376918C1AE" guidtime="11E5F511" jobid="641166538" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/006/root_archive.zip" md5="546d489e794cc898410919e350d5e6ac" owner="psteffan" perm="755" replicated="0" size="8390" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/006/root_archive.zip" type="f" />
+    </event>
+    <event name="7">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:20:28" dir="60620548" entryId="60620555" expiretime="" gowner="psteffan" guid="B99A1F44-F511-11E5-B777-AB70E74808EC" guidtime="11E5F511" jobid="641166539" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/007/root_archive.zip" md5="25125b130094fc7a1d491bbf94400ebf" owner="psteffan" perm="755" replicated="0" size="8342" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/007/root_archive.zip" type="f" />
+    </event>
+    <event name="8">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:25:08" dir="60620581" entryId="60620582" expiretime="" gowner="psteffan" guid="59A30D48-F512-11E5-8F15-D3D7987A6E2D" guidtime="11E5F512" jobid="641166540" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/008/root_archive.zip" md5="22094e423cdfdbe764293bc39b3a0d9c" owner="psteffan" perm="755" replicated="0" size="8246" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/008/root_archive.zip" type="f" />
+    </event>
+    <event name="9">
+      <file name="root_archive.zip" aclId="" broken="0" ctime="2016-03-28 20:21:36" dir="60620567" entryId="60620568" expiretime="" gowner="psteffan" guid="E3A0894A-F511-11E5-9FE9-8719F6E92B94" guidtime="11E5F511" jobid="641166541" lfn="/alice/cern.ch/user/p/psteffan/example_task/out/000/009/root_archive.zip" md5="082e14fade85bb5f25a4e0dc4082bc79" owner="psteffan" perm="755" replicated="0" size="8157" turl="alien:///alice/cern.ch/user/p/psteffan/example_task/out/000/009/root_archive.zip" type="f" />
+    </event>
+    <info command="[/alice/cern.ch/user/p/psteffan/example_task/out/]: find -z -x Stage_1 /alice/cern.ch/user/p/psteffan//example_task/out/000 *root_archive.zip" creator="admin" date="Mon Mar 28 20:37:20 CEST 2016" timestamp="1459190240" />
+  </collection>
+</alien>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
