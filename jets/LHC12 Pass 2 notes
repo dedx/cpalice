@@ -1,0 +1,4 @@
+Looking at Chiaras run by run track QA, we need to correct for a misalignment at phi=6 in periods d-g.
+Appears to be a dip at eta=0. Is this an issue?
+LHC12d runs all have a positively skewed distribution. Perhaps this inspires a Z vertex correction?
+LHC12d EMCal clusters at about eta>0 and 2.1<phi<2.3 look dead in some runs. As well, some runs have dead clusters at 0<eta<0.4 and phi>3

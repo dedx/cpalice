@@ -1,0 +1,5 @@
+Proposed Cuts:
+Z_leading -> I propose a Z_leading cut of Z_leading<.99 at low pt. See the associated pdf and the abrupt density from .99 to 1. However, we may wish to discuss a pt cut as it seems that there may be some higher pt jets with large z_leading that are isolated.
+Jet Area -> I propose a cut on the upper end of the area distribution. I dont know what the theoretical distribution ought to look like but it seems like at low pt these larger jet areas are out of place.
+Leading Parton Pt -> I propose a Leading Parton Pt cut of any jets with pt less than that of the leading parton(duh!) This is really only evident at low pt and becomes less prominent at higher pt. Perhaps there are some theoretical results or simulation results that will gives us a different ratio, i.e. if the leading parton pt fraction is greater than .98 then it is unphysical.
+Neutral Energy Fraction -> This looks weird, comparing it to other papers, the Neutral energy fraction ought to have data from 0 to 1, but this only has data from 0 to 0.01?
